@@ -650,6 +650,8 @@ body {
   padding: 1.5rem;
   border-radius: 1rem;
   text-align: center;
+  position: relative;
+  cursor: pointer;
 }
 
 .stat-icon {
@@ -672,6 +674,34 @@ body {
 .stat-label {
   font-size: 0.875rem;
   color: #64748b;
+}
+
+.stat-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f5efff;
+  border: 1px solid #e0d4ff;
+  border-radius: 0.5rem;
+  color: #6a6193;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.stat-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #f5efff;
 }
 
 .dashboard-content {

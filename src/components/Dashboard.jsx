@@ -200,7 +200,8 @@ function Dashboard() {
           <StatCard 
             icon="🔥" 
             value={stats.streakDays.toString()} 
-            label="Streak Days" 
+            label="Streak Days"
+            tooltip="Complete at least 1 hour of study to earn a streak day. Keep it up!"
           />
           <StatCard 
             icon="🕐" 
