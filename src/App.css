@@ -606,6 +606,11 @@ body {
 .stat-icon {
   font-size: 2rem;
   margin-bottom: 0.5rem;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
 }
 
 .stat-value {
