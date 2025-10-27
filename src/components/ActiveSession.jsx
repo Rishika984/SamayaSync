@@ -7,6 +7,7 @@ function ActiveSession() {
   const location = useLocation();
   const showOnboard = location?.state?.showOnboard;
   const [promptOpen, setPromptOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const [minutes, setMinutes] = useState(25);
   const [seconds, setSeconds] = useState(0);
@@ -196,9 +197,21 @@ function ActiveSession() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+        ☰
+      </button>
+      {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
+      <Sidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
       <main className="dashboard-main">
         {/* Session Goal Card */}
         <div className="figma-session-goal-card">
