@@ -9,6 +9,7 @@ function Dashboard() {
   const location = useLocation();
   const showOnboard = location?.state?.showOnboard;
   const [promptOpen, setPromptOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [todaysPlan, setTodaysPlan] = useState([]);
   const [stats, setStats] = useState({
     totalStudyHours: '0h',
@@ -182,9 +183,21 @@ function Dashboard() {
     { day: 'Sun', hours: 0 }
   ]);
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+        ☰
+      </button>
+      {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
+      <Sidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
       <main className="dashboard-main">
         <div className="dashboard-stats">
           <StatCard 
