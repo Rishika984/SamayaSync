@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Sidebar from './Sidebar';
 
 function Profile() {
@@ -15,6 +15,7 @@ function Profile() {
 
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState({
     totalHours: 0,
     sessionsCompleted: 0,
@@ -33,11 +34,7 @@ function Profile() {
     { id: 6, title: 'Night Owl', description: 'Study after 10 PM', icon: '🦉', unlocked: false }
   ]);
 
-  useEffect(() => {
-    calculateUserStats();
-  }, []);
-
-  const calculateUserStats = () => {
+  const calculateUserStats = useCallback(() => {
     const completedSessions = JSON.parse(localStorage.getItem('completedSessions') || '[]');
     
     if (completedSessions.length === 0) {
@@ -76,7 +73,11 @@ function Profile() {
       longestSession: Math.round(longestSession),
       totalDays
     });
-  };
+  }, [profileData.joinDate]);
+
+  useEffect(() => {
+    calculateUserStats();
+  }, [calculateUserStats]);
 
   const calculateStreakDays = (sessions) => {
     if (sessions.length === 0) return 0;
@@ -148,6 +149,14 @@ function Profile() {
     setIsEditingEmail(false);
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   const getMotivationalMessage = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning! Ready to conquer your goals? ☀️";
@@ -168,7 +177,11 @@ function Profile() {
 
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+        ☰
+      </button>
+      {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
+      <Sidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
       <main className="dashboard-main">
         <div className="profile-container">
           {/* Header Section with Motivational Message */}

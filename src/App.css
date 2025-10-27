@@ -529,6 +529,117 @@ body {
   border-top: 1px solid rgba(100, 116, 139, 0.2);
 }
 
+/* Mobile Menu Toggle Button */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  background: var(--primary);
+  color: white;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* Dashboard Layout Mobile Responsiveness */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    position: fixed;
+    width: 280px;
+    left: -280px;
+    transition: left 0.3s ease;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sidebar.mobile-open {
+    left: 0;
+  }
+  
+  .sidebar-overlay.active {
+    display: block;
+  }
+  
+  .mobile-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .dashboard-main {
+    margin-left: 0;
+    padding: 5rem 1rem 1rem 1rem;
+    width: 100%;
+  }
+  
+  .onboard-box {
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+  
+  .sidebar-logo {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .sidebar {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 100%;
+    left: -100%;
+  }
+  
+  .dashboard-main {
+    padding: 4rem 0.5rem 1rem 0.5rem;
+  }
+  
+  .mobile-menu-toggle {
+    width: 45px;
+    height: 45px;
+    font-size: 1.25rem;
+  }
+  
+  .sidebar-logo {
+    font-size: 1.75rem;
+  }
+  
+  .sidebar-link {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  
+  .onboard-box {
+    padding: 0.75rem;
+    margin: 0.5rem;
+  }
+}
+
 /* Main Content Area */
 .dashboard-main {
   flex: 1;
@@ -1882,7 +1993,22 @@ body {
   box-shadow: 0 8px 16px rgba(167, 139, 250, 0.3);
 }
 
-/* Responsive Design */
+/* Responsive Design for Tablets */
+@media (max-width: 1024px) {
+  .profile-container {
+    padding: 1.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .achievements-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Responsive Design for Mobile */
 @media (max-width: 768px) {
   .profile-container {
     padding: 1rem;
@@ -1892,6 +2018,19 @@ body {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
+    padding: 1.5rem;
+  }
+  
+  .profile-greeting h1 {
+    font-size: 1.5rem;
+  }
+  
+  .profile-level-badge {
+    align-self: center;
+  }
+  
+  .profile-hero {
+    padding: 1.5rem;
   }
   
   .profile-avatar-section {
@@ -1900,18 +2039,236 @@ body {
     gap: 1.5rem;
   }
   
+  .avatar-image-enhanced {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .avatar-badge {
+    width: 28px;
+    height: 28px;
+    font-size: 0.875rem;
+  }
+  
+  .profile-name-enhanced {
+    font-size: 1.75rem;
+  }
+  
   .profile-meta {
     flex-direction: column;
     gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .profile-stats-enhanced,
+  .achievements-section,
+  .enhanced-profile-form {
+    padding: 1.5rem;
+  }
+  
+  .stats-title,
+  .achievements-title,
+  .form-title {
+    font-size: 1.125rem;
   }
   
   .form-row {
     grid-template-columns: 1fr;
   }
   
-  .stats-grid,
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .stat-card-enhanced {
+    padding: 1rem;
+  }
+  
+  .stat-icon-enhanced {
+    font-size: 1.5rem;
+  }
+  
+  .stat-value-enhanced {
+    font-size: 1.5rem;
+  }
+  
   .achievements-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .achievement-card {
+    padding: 0.75rem;
+  }
+  
+  .achievement-icon {
+    font-size: 1.75rem;
+    width: 40px;
+  }
+}
+
+/* Responsive Design for Small Mobile */
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 0.5rem;
+  }
+  
+  .profile-header-enhanced {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .profile-greeting h1 {
+    font-size: 1.25rem;
+  }
+  
+  .profile-subtitle {
+    font-size: 0.875rem;
+  }
+  
+  .profile-level-badge {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .level-icon {
+    font-size: 1.25rem;
+  }
+  
+  .profile-hero {
+    padding: 1rem;
+  }
+  
+  .avatar-image-enhanced {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .avatar-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+    bottom: 4px;
+    right: 4px;
+  }
+  
+  .profile-name-enhanced {
+    font-size: 1.5rem;
+  }
+  
+  .profile-nickname {
+    font-size: 1rem;
+  }
+  
+  .profile-bio {
+    font-size: 0.875rem;
+  }
+  
+  .profile-meta {
+    font-size: 0.8rem;
+  }
+  
+  .profile-stats-enhanced,
+  .achievements-section,
+  .enhanced-profile-form {
+    padding: 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .stat-card-enhanced {
+    padding: 0.75rem;
+  }
+  
+  .stat-icon-enhanced {
+    font-size: 1.25rem;
+  }
+  
+  .stat-value-enhanced {
+    font-size: 1.25rem;
+  }
+  
+  .stat-label-enhanced {
+    font-size: 0.75rem;
+  }
+  
+  .achievement-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .achievement-icon {
+    font-size: 2rem;
+    width: auto;
+    margin-bottom: 0.5rem;
+  }
+  
+  .achievement-checkmark {
+    top: 0.25rem;
+    right: 0.25rem;
+  }
+  
+  .enhanced-profile-form .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .enhanced-profile-form input,
+  .enhanced-profile-form textarea,
+  .enhanced-profile-form select {
+    padding: 0.625rem;
+    font-size: 0.875rem;
+  }
+  
+  .enhanced-save-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Responsive Design for Extra Small Mobile */
+@media (max-width: 360px) {
+  .profile-header-enhanced {
+    padding: 0.75rem;
+  }
+  
+  .profile-greeting h1 {
+    font-size: 1.125rem;
+  }
+  
+  .profile-level-badge {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .avatar-image-enhanced {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .profile-name-enhanced {
+    font-size: 1.25rem;
+  }
+  
+  .stats-title,
+  .achievements-title,
+  .form-title {
+    font-size: 1rem;
+  }
+  
+  .achievement-card {
+    padding: 0.75rem;
+  }
+  
+  .achievement-info h4 {
+    font-size: 0.875rem;
+  }
+  
+  .achievement-desc {
+    font-size: 0.75rem;
   }
 }
 

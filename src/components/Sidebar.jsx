@@ -1,13 +1,19 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-function Sidebar() {
+function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
 
+  const handleLinkClick = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${isOpen ? 'mobile-open' : ''}`}>
       <Link to="/" className="sidebar-logo">
         <span className="logo-hindi">समय</span>
         <span className="logo-english">SYNC</span>
@@ -17,18 +23,21 @@ function Sidebar() {
         <Link 
           to="/dashboard" 
           className={`sidebar-link ${isActive('/dashboard') ? 'active' : ''}`}
+          onClick={handleLinkClick}
         >
           Dashboard
         </Link>
         <Link 
           to="/active-session" 
           className={`sidebar-link ${isActive('/active-session') ? 'active' : ''}`}
+          onClick={handleLinkClick}
         >
           Active Session
         </Link>
         <Link 
           to="/session-log" 
           className={`sidebar-link ${isActive('/session-log') ? 'active' : ''}`}
+          onClick={handleLinkClick}
         >
           Session Log
         </Link>
@@ -38,10 +47,11 @@ function Sidebar() {
         <Link 
           to="/profile" 
           className={`sidebar-link ${isActive('/profile') ? 'active' : ''}`}
+          onClick={handleLinkClick}
         >
           Profile
         </Link>
-        <Link to="/" className="sidebar-link">
+        <Link to="/" className="sidebar-link" onClick={handleLinkClick}>
           Log out
         </Link>
       </div>
