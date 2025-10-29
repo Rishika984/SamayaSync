@@ -13,6 +13,11 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Login data:', formData);
+    
+    // Save login session data
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('loginEmail', formData.email);
+    
     // navigate directly to active session; active session will show the start prompt
     navigate('/active-session', { state: { showOnboard: true } });
   };

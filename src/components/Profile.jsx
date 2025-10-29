@@ -3,10 +3,10 @@ import Sidebar from './Sidebar';
 
 function Profile() {
   const [profileData, setProfileData] = useState({
-    firstName: 'Rishika',
-    lastName: 'Adhikari',
-    nickName: 'Rishi',
-    email: 'rishikaadhikari@gmail.com',
+    firstName: '',
+    lastName: '',
+    nickName: '',
+    email: '',
     joinDate: '',
     studyGoal: '2 hours daily'
   });
@@ -78,7 +78,8 @@ function Profile() {
   }, [calculateUserStats]);
 
   useEffect(() => {
-    // Initialize join date if not already set
+    // Load user data from signup/login
+    const userData = localStorage.getItem('userData');
     const storedProfile = localStorage.getItem('userProfile');
     const currentDate = new Date().toLocaleDateString('en-US', {
       weekday: 'short',
@@ -87,26 +88,61 @@ function Profile() {
       year: 'numeric'
     });
 
+    let updatedProfileData = {
+      firstName: '',
+      lastName: '',
+      nickName: '',
+      email: '',
+      joinDate: '',
+      studyGoal: '2 hours daily'
+    };
+
+    // If user data exists from signup, use it
+    if (userData) {
+      const parsedUserData = JSON.parse(userData);
+      const nameParts = parsedUserData.fullName.split(' ');
+      
+      updatedProfileData = {
+        ...updatedProfileData,
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || '',
+        nickName: nameParts[0] || '',
+        email: parsedUserData.email,
+        joinDate: new Date(parsedUserData.joinDate).toLocaleDateString('en-US', {
+          weekday: 'short',
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        })
+      };
+      
+      // Clear old profile data to ensure fresh signup data is used
+      localStorage.removeItem('userProfile');
+    }
+
+    // Check if there's existing profile data and merge
     if (storedProfile) {
       const parsedProfile = JSON.parse(storedProfile);
-      if (parsedProfile.joinDate) {
-        setProfileData(prev => ({ ...prev, joinDate: parsedProfile.joinDate }));
+      // If we have fresh signup data, prioritize it for name and email, but keep other profile settings
+      if (userData) {
+        updatedProfileData = { 
+          ...parsedProfile, // Keep existing profile settings like studyGoal
+          ...updatedProfileData // Override with fresh signup data (name, email, joinDate)
+        };
       } else {
-        // Set join date to current date if not already set
-        setProfileData(prev => {
-          const updatedProfile = { ...prev, joinDate: currentDate };
-          localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
-          return updatedProfile;
-        });
+        // No fresh signup data, use all stored profile data
+        updatedProfileData = { ...updatedProfileData, ...parsedProfile };
       }
-    } else {
-      // First time user - set join date to current date
-      setProfileData(prev => {
-        const updatedProfile = { ...prev, joinDate: currentDate };
-        localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
-        return updatedProfile;
-      });
     }
+
+    // If no join date is set, use current date
+    if (!updatedProfileData.joinDate) {
+      updatedProfileData.joinDate = currentDate;
+    }
+
+    // Save updated profile and set state
+    localStorage.setItem('userProfile', JSON.stringify(updatedProfileData));
+    setProfileData(updatedProfileData);
   }, []);
 
   const calculateStreakDays = (sessions) => {
@@ -206,14 +242,19 @@ function Profile() {
               <div className="profile-avatar-section">
                 <div className="profile-avatar-enhanced">
                   <img 
-                    src={`https://ui-avatars.com/api/?name=${profileData.firstName}+${profileData.lastName}&background=a78bfa&color=fff&size=120`}
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(profileData.firstName || 'S')}+${encodeURIComponent(profileData.lastName || 'tudent')}&background=a78bfa&color=fff&size=120`}
                     alt="Profile" 
                     className="avatar-image-enhanced"
                   />
                 </div>
                 <div className="profile-info-enhanced">
-                  <h2 className="profile-name-enhanced">{profileData.firstName} {profileData.lastName}</h2>
-                  <p className="profile-nickname">"{profileData.nickName}"</p>
+                  <h2 className="profile-name-enhanced">
+                    {profileData.firstName || profileData.lastName ? 
+                      `${profileData.firstName} ${profileData.lastName}`.trim() : 
+                      'Student'
+                    }
+                  </h2>
+                  <p className="profile-nickname">"{profileData.nickName || 'Learner'}"</p>
                   <div className="profile-meta">
                     <span className="join-date">📅 Member since {profileData.joinDate}</span>
                     <span className="days-active">⏱️ {stats.totalDays} days on platform</span>

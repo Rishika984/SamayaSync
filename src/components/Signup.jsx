@@ -14,6 +14,15 @@ function Signup() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Signup data:', formData);
+    
+    // Save user data to localStorage
+    const userData = {
+      fullName: formData.fullName,
+      email: formData.email,
+      joinDate: new Date().toISOString()
+    };
+    localStorage.setItem('userData', JSON.stringify(userData));
+    
     navigate('/login');
   };
 
