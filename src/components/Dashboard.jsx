@@ -24,7 +24,7 @@ function Dashboard() {
     averageSessionTime: '0 min'
   });
 
-  const loadTodaysPlans = () => {
+  const loadTodaysPlans = useCallback(() => {
     const today = new Date().toDateString();
     const savedPlans = JSON.parse(localStorage.getItem('dailyPlans') || '{}');
     const plans = savedPlans[today] || [];
@@ -37,7 +37,7 @@ function Dashboard() {
     });
     
     setTodaysPlan(sortedPlans);
-  };
+  }, []);
 
   // Helper function to convert time to 24-hour format for sorting
   const convertTo24Hour = (timeStr) => {
@@ -131,7 +131,7 @@ function Dashboard() {
   };
 
   // Update plan progress based on completed sessions
-  const updatePlanProgress = () => {
+  const updatePlanProgress = useCallback(() => {
     const today = new Date().toDateString();
     const savedPlans = JSON.parse(localStorage.getItem('dailyPlans') || '{}');
     
@@ -150,7 +150,7 @@ function Dashboard() {
       localStorage.setItem('dailyPlans', JSON.stringify(savedPlans));
       setTodaysPlan(savedPlans[today]);
     }
-  };
+  }, []);
 
   // Format duration for display
   const formatDuration = (minutes) => {
@@ -333,7 +333,7 @@ function Dashboard() {
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
     };
-  }, [showOnboard, calculateStats, calculateWeeklyProgress]);
+  }, [showOnboard, calculateStats, calculateWeeklyProgress, loadTodaysPlans, updatePlanProgress]);
 
   const [progressData, setProgressData] = useState([
     { day: 'Mon', hours: 0 },
