@@ -14,7 +14,7 @@ function Signup() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Signup data:', formData);
-    navigate('/active-session', { state: { showOnboard: true } });
+    navigate('/login');
   };
 
   const handleChange = (e) => {
