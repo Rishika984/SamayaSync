@@ -7,10 +7,8 @@ function Profile() {
     lastName: 'Adhikari',
     nickName: 'Rishi',
     email: 'rishikaadhikari@gmail.com',
-    joinDate: 'Tue, 07 June 2022',
-    bio: 'Passionate learner focused on consistent growth and development.',
-    studyGoal: '2 hours daily',
-    favoriteSubject: 'Computer Science'
+    joinDate: '',
+    studyGoal: '2 hours daily'
   });
 
   const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -26,11 +24,11 @@ function Profile() {
   });
 
   const [achievements] = useState([
-    { id: 1, title: 'First Steps', description: 'Complete your first study session', icon: '🎯', unlocked: true },
-    { id: 2, title: 'Consistency Champion', description: 'Study for 7 days in a row', icon: '🔥', unlocked: true },
+    { id: 1, title: 'First Steps', description: 'Complete your first study session', icon: '🎯', unlocked: false },
+    { id: 2, title: 'Consistency Champion', description: 'Study for 7 days in a row', icon: '🔥', unlocked: false },
     { id: 3, title: 'Marathon Master', description: 'Complete a 2-hour study session', icon: '⏰', unlocked: false },
     { id: 4, title: 'Century Club', description: 'Complete 100 total hours', icon: '💯', unlocked: false },
-    { id: 5, title: 'Early Bird', description: 'Start a session before 8 AM', icon: '🌅', unlocked: true },
+    { id: 5, title: 'Early Bird', description: 'Start a session before 8 AM', icon: '🌅', unlocked: false },
     { id: 6, title: 'Night Owl', description: 'Study after 10 PM', icon: '🦉', unlocked: false }
   ]);
 
@@ -78,6 +76,38 @@ function Profile() {
   useEffect(() => {
     calculateUserStats();
   }, [calculateUserStats]);
+
+  useEffect(() => {
+    // Initialize join date if not already set
+    const storedProfile = localStorage.getItem('userProfile');
+    const currentDate = new Date().toLocaleDateString('en-US', {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+
+    if (storedProfile) {
+      const parsedProfile = JSON.parse(storedProfile);
+      if (parsedProfile.joinDate) {
+        setProfileData(prev => ({ ...prev, joinDate: parsedProfile.joinDate }));
+      } else {
+        // Set join date to current date if not already set
+        setProfileData(prev => {
+          const updatedProfile = { ...prev, joinDate: currentDate };
+          localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+          return updatedProfile;
+        });
+      }
+    } else {
+      // First time user - set join date to current date
+      setProfileData(prev => {
+        const updatedProfile = { ...prev, joinDate: currentDate };
+        localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+        return updatedProfile;
+      });
+    }
+  }, []);
 
   const calculateStreakDays = (sessions) => {
     if (sessions.length === 0) return 0;
@@ -157,23 +187,7 @@ function Profile() {
     setIsMobileMenuOpen(false);
   };
 
-  const getMotivationalMessage = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning! Ready to conquer your goals? ☀️";
-    if (hour < 17) return "Good afternoon! Keep up the momentum! ⚡";
-    return "Good evening! Time to reflect on your progress! 🌙";
-  };
 
-  const getProfileLevel = () => {
-    const totalHours = stats.totalHours;
-    if (totalHours >= 100) return { level: 'Expert', color: '#f59e0b', icon: '👑' };
-    if (totalHours >= 50) return { level: 'Advanced', color: '#8b5cf6', icon: '🚀' };
-    if (totalHours >= 20) return { level: 'Intermediate', color: '#06b6d4', icon: '📚' };
-    if (totalHours >= 5) return { level: 'Beginner', color: '#10b981', icon: '🌱' };
-    return { level: 'Newcomer', color: '#6b7280', icon: '✨' };
-  };
-
-  const userLevel = getProfileLevel();
 
   return (
     <div className="dashboard-layout">
@@ -184,19 +198,7 @@ function Profile() {
       <Sidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
       <main className="dashboard-main">
         <div className="profile-container">
-          {/* Header Section with Motivational Message */}
-          <div className="profile-header-enhanced">
-            <div className="profile-greeting">
-              <h1 className="profile-welcome-enhanced">{getMotivationalMessage()}</h1>
-              <p className="profile-subtitle">Your learning journey continues...</p>
-            </div>
-            <div className="profile-level-badge">
-              <span className="level-icon">{userLevel.icon}</span>
-              <span className="level-text" style={{ color: userLevel.color }}>
-                {userLevel.level} Learner
-              </span>
-            </div>
-          </div>
+
 
           {/* Main Profile Card */}
           <div className="enhanced-profile-card">
@@ -208,14 +210,10 @@ function Profile() {
                     alt="Profile" 
                     className="avatar-image-enhanced"
                   />
-                  <div className="avatar-badge" style={{ backgroundColor: userLevel.color }}>
-                    {userLevel.icon}
-                  </div>
                 </div>
                 <div className="profile-info-enhanced">
                   <h2 className="profile-name-enhanced">{profileData.firstName} {profileData.lastName}</h2>
                   <p className="profile-nickname">"{profileData.nickName}"</p>
-                  <p className="profile-bio">{profileData.bio}</p>
                   <div className="profile-meta">
                     <span className="join-date">📅 Member since {profileData.joinDate}</span>
                     <span className="days-active">⏱️ {stats.totalDays} days on platform</span>
@@ -312,29 +310,6 @@ function Profile() {
                     placeholder="Your Nickname"
                   />
                 </div>
-                <div className="form-group">
-                  <label htmlFor="favoriteSubject">Favorite Subject</label>
-                  <input
-                    type="text"
-                    id="favoriteSubject"
-                    name="favoriteSubject"
-                    value={profileData.favoriteSubject}
-                    onChange={handleChange}
-                    placeholder="What do you love studying?"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="bio">Bio</label>
-                <textarea
-                  id="bio"
-                  name="bio"
-                  value={profileData.bio}
-                  onChange={handleChange}
-                  placeholder="Tell us about yourself and your learning goals..."
-                  rows="3"
-                />
               </div>
 
               <div className="form-group">
