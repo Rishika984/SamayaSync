@@ -1691,7 +1691,7 @@ body {
   background: #CDC1FF;
   padding: 2rem;
   border-radius: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .figma-session-goal-title {
@@ -1929,167 +1929,420 @@ body {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-  .figma-session-content {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    padding: 0;
+  .dashboard-main {
+    padding: 1.5rem 1rem;
   }
   
-  .figma-session-goal-card,
+  .figma-session-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0;
+    margin-top: 2.5rem;
+  }
+  
+  .figma-session-goal-card {
+    padding: 1.5rem;
+    margin-bottom: 0;
+  }
+  
   .figma-focus-card,
   .figma-subject-card {
-    padding: 1.25rem;
-    margin: 0 0.5rem;
+    padding: 1.5rem;
+    margin: 0;
   }
   
   .figma-session-goal-title,
   .figma-focus-title,
   .figma-subject-title {
-    font-size: 1.125rem;
-    margin-bottom: 0.75rem;
+    font-size: 1.375rem;
+    margin-bottom: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+    color: #6A6193;
+  }
+  
+  .figma-focus-subtitle {
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #64748b;
+    padding: 0 0.5rem;
   }
   
   .figma-session-goal-input {
-    min-height: 80px;
+    min-height: 90px;
+    font-size: 1rem;
+    padding: 1rem;
+    line-height: 1.5;
+  }
+  
+  .subject-selection {
+    margin-bottom: 2.5rem;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(106, 97, 147, 0.15);
+  }
+  
+  .subject-selection label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: block;
+    color: #6A6193;
+    text-align: center;
+  }
+  
+  .subject-dropdown-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .subject-dropdown {
+    padding: 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+  }
+  
+  .add-subject-btn {
+    padding: 0.875rem 1rem;
     font-size: 0.9rem;
-    padding: 0.875rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    color: #64748b;
+    border-radius: 8px;
+    font-weight: 600;
   }
   
   .figma-timer-section {
+    margin: 2.5rem 0;
+    display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
     align-items: center;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+    border: 2px solid rgba(106, 97, 147, 0.1);
   }
   
-  .figma-timer {
-    font-size: 3rem;
-  }
-  
-  .figma-timer-text {
-    font-size: 1rem;
-    margin-top: 0.5rem;
-  }
-  
-  .figma-progress-info {
-    flex-direction: column;
-    gap: 0.5rem;
+  .figma-timer-display {
     text-align: center;
-    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
   
-  .figma-progress-info span {
-    font-size: 0.875rem;
+  .figma-timer-value {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #6A6193;
+  }
+  
+  .figma-timer-unit {
+    font-size: 1.25rem;
+    color: #64748b;
+    margin-left: 0.5rem;
+  }
+  
+  .pomodoro-progress {
+    background: rgba(139, 92, 246, 0.05);
+    padding: 1.5rem;
+    border-radius: 14px;
+    margin: 2rem 0;
+    border: 2px solid rgba(139, 92, 246, 0.15);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+  }
+  
+  .progress-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .progress-info span {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #64748b;
+  }
+  
+  .progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+    transition: width 0.3s ease;
   }
   
   .figma-timer-controls {
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
-    max-width: 300px;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    max-width: 200px;
+    margin: 0 auto;
   }
   
-  .figma-timer-controls button {
-    width: 100%;
-    padding: 0.875rem 1rem;
-    font-size: 0.9rem;
+  .figma-timer-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+    background: #ffffff;
+    color: #6A6193;
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .figma-timer-btn:hover {
+    border-color: #8b5cf6;
+    background: #f8fafc;
   }
   
   .figma-session-buttons {
+    display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 1rem;
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+    padding: 0 1rem;
   }
   
-  .figma-session-buttons button {
+  .figma-start-btn {
+    width: 100%;
+    padding: 1.25rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .figma-start-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+  }
+  
+  .figma-reset-btn {
     width: 100%;
     padding: 1rem;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: #f8fafc;
+    color: #64748b;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
   
-  .figma-subject-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+  .figma-reset-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
   }
   
-  .figma-subject-item {
-    padding: 0.75rem;
-    font-size: 0.875rem;
+  .current-subject-display {
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+  
+  .selected-subject {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #6A6193;
+    margin-bottom: 0.75rem;
+  }
+  
+  .session-status {
+    font-size: 1rem;
+    color: #64748b;
+    font-weight: 600;
+  }
+  
+  .no-subject {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    font-style: italic;
   }
   
   .add-subject-section {
+    display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
     margin-top: 1rem;
   }
   
   .add-subject-input {
-    padding: 0.75rem;
-    font-size: 0.875rem;
+    padding: 1rem;
+    font-size: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
   }
   
   .add-subject-buttons {
+    display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
   }
   
-  .add-subject-buttons button {
+  .add-subject-save-btn {
     width: 100%;
-    padding: 0.75rem;
-    font-size: 0.875rem;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+  }
+  
+  .add-subject-cancel-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: #f8fafc;
+    color: #64748b;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
   }
 }
 
 /* Small Mobile Responsiveness */
 @media (max-width: 480px) {
   .dashboard-main {
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.75rem;
   }
   
-  .figma-session-goal-card,
+  .figma-session-content {
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+  
+  .figma-session-goal-card {
+    padding: 1.25rem;
+    margin-bottom: 0;
+  }
+  
   .figma-focus-card,
   .figma-subject-card {
-    padding: 1rem;
-    margin: 0 0.25rem;
-    border-radius: 0.75rem;
+    padding: 1.25rem;
+    border-radius: 16px;
   }
   
   .figma-session-goal-title,
   .figma-focus-title,
   .figma-subject-title {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    text-align: center;
+    color: #6A6193;
+  }
+  
+  .figma-focus-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: center;
+    margin-bottom: 1.75rem;
+    color: #64748b;
+    padding: 0 0.25rem;
   }
   
   .figma-session-goal-input {
-    min-height: 70px;
-    font-size: 0.8rem;
+    min-height: 80px;
+    font-size: 0.95rem;
+    padding: 1rem;
+  }
+  
+  .subject-selection {
+    margin-bottom: 2rem;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    border: 1px solid rgba(106, 97, 147, 0.1);
+  }
+  
+  .subject-selection label {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .subject-dropdown {
+    padding: 0.875rem;
+    font-size: 0.95rem;
+  }
+  
+  .add-subject-btn {
     padding: 0.75rem;
-  }
-  
-  .figma-timer {
-    font-size: 2.5rem;
-  }
-  
-  .figma-timer-text {
     font-size: 0.875rem;
   }
   
-  .figma-progress-info span {
-    font-size: 0.8rem;
+  .figma-timer-section {
+    margin: 2rem 0;
+    gap: 1.5rem;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 1.75rem 1.25rem;
+    border-radius: 14px;
+    border: 2px solid rgba(106, 97, 147, 0.1);
+  }
+  
+  .figma-timer-value {
+    font-size: 3rem;
+  }
+  
+  .figma-timer-unit {
+    font-size: 1.125rem;
   }
   
   .figma-timer-controls {
-    max-width: 250px;
+    max-width: 180px;
   }
   
-  .figma-timer-controls button {
-    padding: 0.75rem 0.875rem;
-    font-size: 0.8rem;
+  .figma-timer-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 1.125rem;
   }
   
-  .figma-session-buttons button {
+  .figma-session-buttons {
+    margin-top: 2rem;
+    gap: 1rem;
+    padding: 0 0.75rem;
+  }
+  
+  .figma-start-btn {
+    padding: 1.125rem;
+    font-size: 1rem;
+  }
+  
+  .figma-reset-btn {
     padding: 0.875rem;
-    font-size: 0.8rem;
+    font-size: 0.95rem;
+  }
+  
+  .selected-subject {
+    font-size: 1.375rem;
+  }
+  
+  .session-status {
+    font-size: 0.95rem;
   }
   
   .figma-subject-grid {
@@ -2424,7 +2677,7 @@ body {
 .pomodoro-progress {
   background: rgba(255, 255, 255, 0.8);
   padding: 1rem;
-  border-radius: var(--border-radius);
+  border-radius: 12px;
   margin: 1rem 0;
   border: 1px solid rgba(165, 148, 249, 0.3);
 }
