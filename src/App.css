@@ -2458,33 +2458,8 @@ body {
   width: 100%;
 }
 
-/* Gradient variations for session cards */
-.figma-session-header.gradient-1 {
-  background: linear-gradient(135deg, #FF6B6B, #FFE66D);
-}
-
-.figma-session-header.gradient-2 {
-  background: linear-gradient(135deg, #4ECDC4, #44A08D);
-}
-
-.figma-session-header.gradient-3 {
-  background: linear-gradient(135deg, #A8EDEA, #FED6E3);
-}
-
-.figma-session-header.gradient-4 {
-  background: linear-gradient(135deg, #FFE53B, #FF2525);
-}
-
-.figma-session-header.gradient-5 {
-  background: linear-gradient(135deg, #74b9ff, #0984e3);
-}
-
-.figma-session-header.gradient-6 {
-  background: linear-gradient(135deg, #fd79a8, #e84393);
-}
-
 .figma-session-body {
-  background: #CDC1FF;
+  background: linear-gradient(135deg, #CDC1FF 0%, #E8DDFF 50%, #F5EFFF 100%);
   padding: 2rem;
   text-align: center;
 }
