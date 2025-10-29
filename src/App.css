@@ -978,10 +978,8 @@ body {
 /* Mobile Menu Toggle Button */
 .mobile-menu-toggle {
   display: none;
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  z-index: 1001;
+  position: static;
+  margin: 1rem;
   background: var(--primary);
   color: white;
   border: none;
@@ -1008,13 +1006,14 @@ body {
 /* Dashboard Layout Mobile Responsiveness */
 @media (max-width: 768px) {
   .dashboard-layout {
-    flex-direction: column;
+    position: relative;
+    display: block;
   }
   
   .sidebar {
     position: fixed;
-    width: 50%;
-    left: -50%;
+    width: 75%;
+    left: -75%;
     transition: left 0.3s ease;
     z-index: 1000;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
@@ -1032,12 +1031,17 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: static;
+    margin: 1rem;
+    align-self: flex-start;
   }
   
   .dashboard-main {
-    margin-left: 0;
-    padding: 5rem 1rem 1rem 1rem;
+    position: relative;
+    margin: 0;
+    padding: 1rem;
     width: 100%;
+    min-height: 100vh;
   }
   
   .onboard-box {
@@ -1057,18 +1061,22 @@ body {
 
 @media (max-width: 480px) {
   .sidebar {
-    width: 50%;
-    left: -50%;
+    width: 75%;
+    left: -75%;
   }
   
   .dashboard-main {
-    padding: 4rem 0.5rem 1rem 0.5rem;
+    position: relative;
+    margin: 0;
+    padding: 0.5rem;
+    width: 100%;
   }
   
   .mobile-menu-toggle {
     width: 45px;
     height: 45px;
     font-size: 1.25rem;
+    margin: 0.75rem;
   }
   
   .sidebar-logo {
@@ -1932,7 +1940,10 @@ body {
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .dashboard-main {
-    padding: 1.5rem 1rem;
+    position: relative;
+    margin: 0;
+    padding: 1rem;
+    width: 100%;
   }
   
   .figma-session-content {
@@ -2227,7 +2238,10 @@ body {
 /* Small Mobile Responsiveness */
 @media (max-width: 480px) {
   .dashboard-main {
-    padding: 1rem 0.75rem;
+    position: relative;
+    margin: 0;
+    padding: 0.75rem;
+    width: 100%;
   }
   
   .figma-session-content {
@@ -2372,7 +2386,10 @@ body {
 /* Extra Small Mobile */
 @media (max-width: 360px) {
   .dashboard-main {
-    padding: 0.75rem 0.25rem;
+    position: relative;
+    margin: 0;
+    padding: 0.25rem;
+    width: 100%;
   }
   
   .figma-session-goal-card,
@@ -2439,6 +2456,31 @@ body {
 .figma-session-header {
   height: 60px;
   width: 100%;
+}
+
+/* Gradient variations for session cards */
+.figma-session-header.gradient-1 {
+  background: linear-gradient(135deg, #FF6B6B, #FFE66D);
+}
+
+.figma-session-header.gradient-2 {
+  background: linear-gradient(135deg, #4ECDC4, #44A08D);
+}
+
+.figma-session-header.gradient-3 {
+  background: linear-gradient(135deg, #A8EDEA, #FED6E3);
+}
+
+.figma-session-header.gradient-4 {
+  background: linear-gradient(135deg, #FFE53B, #FF2525);
+}
+
+.figma-session-header.gradient-5 {
+  background: linear-gradient(135deg, #74b9ff, #0984e3);
+}
+
+.figma-session-header.gradient-6 {
+  background: linear-gradient(135deg, #fd79a8, #e84393);
 }
 
 .figma-session-body {

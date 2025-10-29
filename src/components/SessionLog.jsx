@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 
 function SessionLog() {
   const [todaysSessions, setTodaysSessions] = useState([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Load only today's completed sessions from localStorage
   useEffect(() => {
@@ -48,9 +49,21 @@ function SessionLog() {
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+        ☰
+      </button>
+      {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
+      <Sidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
       <main className="dashboard-main">
         <div className="session-log-container">
           {todaysSessions.length === 0 ? (
@@ -63,8 +76,7 @@ function SessionLog() {
               {todaysSessions.map((session, index) => (
                 <div key={index} className="figma-session-card">
                   <div 
-                    className="figma-session-header" 
-                    style={{ backgroundColor: session.color || getRandomColor() }}
+                    className={`figma-session-header gradient-${(index % 6) + 1}`}
                   />
                   <div className="figma-session-body">
                     <div className="figma-session-subject">{session.subject.toUpperCase()}</div>
