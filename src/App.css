@@ -973,6 +973,8 @@ body {
   border-top: 1px solid rgba(100, 116, 139, 0.2);
 }
 
+
+
 /* Mobile Menu Toggle Button */
 .mobile-menu-toggle {
   display: none;
@@ -1011,8 +1013,8 @@ body {
   
   .sidebar {
     position: fixed;
-    width: 280px;
-    left: -280px;
+    width: 50%;
+    left: -50%;
     transition: left 0.3s ease;
     z-index: 1000;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
@@ -1055,8 +1057,8 @@ body {
 
 @media (max-width: 480px) {
   .sidebar {
-    width: 100%;
-    left: -100%;
+    width: 50%;
+    left: -50%;
   }
   
   .dashboard-main {
