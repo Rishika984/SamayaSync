@@ -1,8 +1,11 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import LogoutModal from './LogoutModal';
 
 function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const isActive = (path) => location.pathname === path;
 
@@ -10,6 +13,28 @@ function Sidebar({ isOpen, onClose }) {
     if (onClose) {
       onClose();
     }
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    // Clear any stored user data
+    localStorage.removeItem('userData');
+    localStorage.removeItem('userProfile');
+    localStorage.removeItem('completedSessions');
+    localStorage.removeItem('dailyPlans');
+    // Navigate to home page
+    navigate('/');
+    setShowLogoutModal(false);
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutModal(false);
   };
 
   return (
@@ -51,10 +76,19 @@ function Sidebar({ isOpen, onClose }) {
         >
           Profile
         </Link>
-        <Link to="/" className="sidebar-link" onClick={handleLinkClick}>
+        <button 
+          className="sidebar-link logout-btn" 
+          onClick={handleLogoutClick}
+        >
           Log out
-        </Link>
+        </button>
       </div>
+
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onConfirm={handleLogoutConfirm}
+        onCancel={handleLogoutCancel}
+      />
     </div>
   );
 }
