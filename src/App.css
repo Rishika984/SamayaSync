@@ -1609,6 +1609,8 @@ body {
   
   .chart-container {
     padding: 0.5rem;
+    min-width: 320px;
+    overflow-x: auto;
   }
   
   .plan-item {

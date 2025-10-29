@@ -228,15 +228,25 @@ function Dashboard() {
             <h2 className="section-title">Progress</h2>
             <div className="chart-container">
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={progressData}>
+                <BarChart 
+                  data={progressData}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                  <XAxis dataKey="day" stroke="#64748b" />
-                  <YAxis stroke="#64748b" />
+                  <XAxis 
+                    dataKey="day" 
+                    stroke="#64748b"
+                    fontSize={12}
+                    tickMargin={5}
+                    interval={0}
+                  />
+                  <YAxis stroke="#64748b" fontSize={12} />
                   <Tooltip 
                     contentStyle={{ 
                       background: '#fff', 
                       border: '1px solid #e0e0e0',
-                      borderRadius: '8px'
+                      borderRadius: '8px',
+                      fontSize: '12px'
                     }} 
                   />
                   <Bar dataKey="hours" fill="#a78bfa" radius={[8, 8, 0, 0]} />
