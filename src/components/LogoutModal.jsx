@@ -1,9 +1,10 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 function LogoutModal({ isOpen, onConfirm, onCancel }) {
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className="modal-overlay">
       <div className="logout-modal">
         <h3 className="modal-title">Confirm Logout</h3>
@@ -25,7 +26,8 @@ function LogoutModal({ isOpen, onConfirm, onCancel }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
