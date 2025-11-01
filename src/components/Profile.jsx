@@ -14,6 +14,7 @@ function Profile() {
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [stats, setStats] = useState({
     totalHours: 0,
     sessionsCompleted: 0,
@@ -189,7 +190,14 @@ function Profile() {
     e.preventDefault();
     // Save to localStorage for persistence
     localStorage.setItem('userProfile', JSON.stringify(profileData));
-    alert('Profile updated successfully!');
+    
+    // Show success popup
+    setShowSuccessPopup(true);
+    
+    // Auto-hide popup after 3 seconds
+    setTimeout(() => {
+      setShowSuccessPopup(false);
+    }, 3000);
   };
 
   const handleEditEmail = () => {
@@ -427,6 +435,17 @@ function Profile() {
           </div>
         </div>
       </main>
+
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="success-popup-overlay">
+          <div className="success-popup">
+            <div className="success-icon">✅</div>
+            <h3 className="success-title">Success!</h3>
+            <p className="success-message">Profile updated successfully</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
