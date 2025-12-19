@@ -6,7 +6,7 @@ export const register = async (userData) => {
     const response = await API.post('/auth/register', userData);
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: 'Registration failed' };
+    throw error;
   }
 };
 
@@ -16,7 +16,7 @@ export const login = async (credentials) => {
     const response = await API.post('/auth/login', credentials);
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: 'Login failed' };
+    throw error;
   }
 };
 
@@ -26,11 +26,26 @@ export const getCurrentUser = async () => {
     const response = await API.get('/auth/me');
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: 'Failed to fetch user' };
+    throw error;
   }
 };
 
-// Logout
-export const logout = () => {
- 
+// Update user profile
+export const updateUserProfile = async (profileData) => {
+  try {
+    const response = await API.put('/auth/profile', profileData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Logout user
+export const logout = async () => {
+  try {
+    const response = await API.post('/auth/logout');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };

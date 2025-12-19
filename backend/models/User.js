@@ -25,6 +25,17 @@ const userSchema = mongoose.Schema(
       minlength: 6,
       select: false,
     },
+    nickName: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: 30,
+    },
+    studyGoal: {
+      type: String,
+      default: '2 hours daily',
+      enum: ['30 minutes daily', '1 hour daily', '2 hours daily', '3 hours daily', '4+ hours daily'],
+    },
     role: {
       type: String,
       enum: ['user', 'admin'],

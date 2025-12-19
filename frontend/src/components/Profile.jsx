@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { getCurrentUser, updateUserProfile } from './services/authService';
 import Sidebar from './Sidebar';
 
 function Profile() {
@@ -11,11 +12,13 @@ function Profile() {
     studyGoal: '2 hours daily'
   });
 
-  const [isEditingEmail, setIsEditingEmail] = useState(false);
-  const [newEmail, setNewEmail] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [stats, setStats] = useState({
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  
+  const [stats] = useState({
     totalHours: 0,
     sessionsCompleted: 0,
     streakDays: 0,
@@ -33,151 +36,53 @@ function Profile() {
     { id: 6, title: 'Night Owl', description: 'Study after 10 PM', icon: '🦉', unlocked: false }
   ]);
 
-  const calculateUserStats = useCallback(() => {
-    const completedSessions = JSON.parse(localStorage.getItem('completedSessions') || '[]');
-    
-    if (completedSessions.length === 0) {
-      return;
-    }
-
-    // Calculate total hours
-    const totalMinutes = completedSessions.reduce((total, session) => total + session.duration, 0);
-    const totalHours = Math.round((totalMinutes / 60) * 10) / 10;
-
-    // Calculate sessions completed
-    const sessionsCompleted = completedSessions.length;
-
-    // Calculate streak days (reuse logic from Dashboard)
-    const streakDays = calculateStreakDays(completedSessions);
-
-    // Calculate average daily hours
-    const uniqueDays = [...new Set(completedSessions.map(session => 
-      new Date(session.completedAt).toDateString()
-    ))];
-    const averageDaily = uniqueDays.length > 0 ? Math.round((totalHours / uniqueDays.length) * 10) / 10 : 0;
-
-    // Find longest session
-    const longestSession = Math.max(...completedSessions.map(session => session.duration));
-
-    // Days since joining
-    const joinDate = new Date(profileData.joinDate);
-    const today = new Date();
-    const totalDays = Math.ceil((today - joinDate) / (1000 * 60 * 60 * 24));
-
-    setStats({
-      totalHours,
-      sessionsCompleted,
-      streakDays,
-      averageDaily,
-      longestSession: Math.round(longestSession),
-      totalDays
-    });
-  }, [profileData.joinDate]);
-
+  // Fetch user data from backend
   useEffect(() => {
-    calculateUserStats();
-  }, [calculateUserStats]);
-
-  useEffect(() => {
-    // Load user data from signup/login
-    const userData = localStorage.getItem('userData');
-    const storedProfile = localStorage.getItem('userProfile');
-    const currentDate = new Date().toLocaleDateString('en-US', {
-      weekday: 'short',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    });
-
-    let updatedProfileData = {
-      firstName: '',
-      lastName: '',
-      nickName: '',
-      email: '',
-      joinDate: '',
-      studyGoal: '2 hours daily'
-    };
-
-    // If user data exists from signup, use it
-    if (userData) {
-      const parsedUserData = JSON.parse(userData);
-      const nameParts = parsedUserData.fullName.split(' ');
-      
-      updatedProfileData = {
-        ...updatedProfileData,
-        firstName: nameParts[0] || '',
-        lastName: nameParts.slice(1).join(' ') || '',
-        nickName: nameParts[0] || '',
-        email: parsedUserData.email,
-        joinDate: new Date(parsedUserData.joinDate).toLocaleDateString('en-US', {
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        const userData = await getCurrentUser();
+        
+        // Split fullName into firstName and lastName
+        const nameParts = userData.fullName ? userData.fullName.split(' ') : ['', ''];
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        
+        // Format join date
+        const formattedJoinDate = new Date(userData.joinDate).toLocaleDateString('en-US', {
           weekday: 'short',
           day: '2-digit',
           month: 'long',
           year: 'numeric'
-        })
-      };
-      
-      // Clear old profile data to ensure fresh signup data is used
-      localStorage.removeItem('userProfile');
-    }
+        });
 
-    // Check if there's existing profile data and merge
-    if (storedProfile) {
-      const parsedProfile = JSON.parse(storedProfile);
-      // If we have fresh signup data, prioritize it for name and email, but keep other profile settings
-      if (userData) {
-        updatedProfileData = { 
-          ...parsedProfile, // Keep existing profile settings like studyGoal
-          ...updatedProfileData // Override with fresh signup data (name, email, joinDate)
+        // Calculate days since joining
+        const joinDate = new Date(userData.joinDate);
+        const today = new Date();
+        const totalDays = Math.max(0, Math.ceil((today - joinDate) / (1000 * 60 * 60 * 24)));
+
+        const updatedProfileData = {
+          firstName,
+          lastName,
+          nickName: userData.nickName || firstName || 'Learner',
+          email: userData.email,
+          joinDate: formattedJoinDate,
+          studyGoal: userData.studyGoal || '2 hours daily',
+          totalDays
         };
-      } else {
-        // No fresh signup data, use all stored profile data
-        updatedProfileData = { ...updatedProfileData, ...parsedProfile };
+
+        setProfileData(updatedProfileData);
+        setError('');
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+        setError('Failed to load profile data. Please login again.');
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    // If no join date is set, use current date
-    if (!updatedProfileData.joinDate) {
-      updatedProfileData.joinDate = currentDate;
-    }
-
-    // Save updated profile and set state
-    localStorage.setItem('userProfile', JSON.stringify(updatedProfileData));
-    setProfileData(updatedProfileData);
+    fetchUserData();
   }, []);
-
-  const calculateStreakDays = (sessions) => {
-    if (sessions.length === 0) return 0;
-
-    // Get unique study days with at least 60 minutes
-    const studyDays = {};
-    sessions.forEach(session => {
-      const dayKey = new Date(session.completedAt).toDateString();
-      if (!studyDays[dayKey]) studyDays[dayKey] = 0;
-      studyDays[dayKey] += session.duration;
-    });
-
-    const validDays = Object.keys(studyDays)
-      .filter(day => studyDays[day] >= 60)
-      .sort((a, b) => new Date(b) - new Date(a));
-
-    if (validDays.length === 0) return 0;
-
-    let streak = 1;
-    for (let i = 1; i < validDays.length; i++) {
-      const currentDate = new Date(validDays[i-1]);
-      const previousDate = new Date(validDays[i]);
-      const daysDiff = Math.ceil((currentDate - previousDate) / (1000 * 60 * 60 * 24));
-      
-      if (daysDiff === 1) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-    
-    return streak;
-  };
 
   const handleChange = (e) => {
     setProfileData({
@@ -186,41 +91,30 @@ function Profile() {
     });
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    // Save to localStorage for persistence
-    localStorage.setItem('userProfile', JSON.stringify(profileData));
-    
-    // Show success popup
-    setShowSuccessPopup(true);
-    
-    // Auto-hide popup after 3 seconds
-    setTimeout(() => {
-      setShowSuccessPopup(false);
-    }, 3000);
-  };
+    setSaving(true);
 
-  const handleEditEmail = () => {
-    setNewEmail(profileData.email);
-    setIsEditingEmail(true);
-  };
-
-  const handleSaveEmail = () => {
-    if (newEmail.trim() && newEmail.includes('@')) {
-      setProfileData({
-        ...profileData,
-        email: newEmail
+    try {
+      // Save only editable fields to backend
+      await updateUserProfile({
+        nickName: profileData.nickName,
+        studyGoal: profileData.studyGoal
       });
-      setIsEditingEmail(false);
-      alert('Email address updated successfully!');
-    } else {
-      alert('Please enter a valid email address.');
+      
+      // Show success popup
+      setShowSuccessPopup(true);
+      
+      // Auto-hide popup after 3 seconds
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 3000);
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      alert('Failed to update profile. Please try again.');
+    } finally {
+      setSaving(false);
     }
-  };
-
-  const handleCancelEmailEdit = () => {
-    setNewEmail('');
-    setIsEditingEmail(false);
   };
 
   const toggleMobileMenu = () => {
@@ -231,7 +125,74 @@ function Profile() {
     setIsMobileMenuOpen(false);
   };
 
+  if (loading) {
+    return (
+      <div className="dashboard-layout">
+        <Sidebar />
+        <main className="dashboard-main">
+          <div className="profile-container">
+            <div className="loading-state" style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '60vh',
+              fontSize: '18px',
+              color: '#6366f1',
+              flexDirection: 'column',
+              gap: '20px'
+            }}>
+              <div className="loading-spinner" style={{
+                border: '4px solid #f3f4f6',
+                borderTop: '4px solid #6366f1',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <div>Loading profile...</div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
+  if (error) {
+    return (
+      <div className="dashboard-layout">
+        <Sidebar />
+        <main className="dashboard-main">
+          <div className="profile-container">
+            <div className="error-state" style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '60vh',
+              fontSize: '18px',
+              color: '#dc2626',
+              flexDirection: 'column',
+              gap: '20px'
+            }}>
+              <div>❌ {error}</div>
+              <button 
+                onClick={() => window.location.href = '/login'} 
+                style={{
+                  padding: '10px 20px',
+                  background: '#6366f1',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer'
+                }}
+              >
+                Go to Login
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-layout">
@@ -242,8 +203,6 @@ function Profile() {
       <Sidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
       <main className="dashboard-main">
         <div className="profile-container">
-
-
           {/* Main Profile Card */}
           <div className="enhanced-profile-card">
             <div className="profile-hero">
@@ -262,10 +221,10 @@ function Profile() {
                       'Student'
                     }
                   </h2>
-                  <p className="profile-nickname">"{profileData.nickName || 'Learner'}"</p>
+                  <p className="profile-nickname">{profileData.email || 'Learner'}</p>
                   <div className="profile-meta">
                     <span className="join-date">📅 Member since {profileData.joinDate}</span>
-                    <span className="days-active">⏱️ {stats.totalDays} days on platform</span>
+                    <span className="days-active">⏱️ {profileData.totalDays || 0} days on platform</span>
                   </div>
                 </div>
               </div>
@@ -330,8 +289,9 @@ function Profile() {
                     id="firstName"
                     name="firstName"
                     value={profileData.firstName}
-                    onChange={handleChange}
-                    placeholder="Your First Name"
+                    disabled
+                    style={{ opacity: 0.6, cursor: 'not-allowed', background: '#f3f4f6' }}
+                    title="Name is set during registration and cannot be changed"
                   />
                 </div>
                 <div className="form-group">
@@ -341,8 +301,9 @@ function Profile() {
                     id="lastName"
                     name="lastName"
                     value={profileData.lastName}
-                    onChange={handleChange}
-                    placeholder="Your Last Name"
+                    disabled
+                    style={{ opacity: 0.6, cursor: 'not-allowed', background: '#f3f4f6' }}
+                    title="Name is set during registration and cannot be changed"
                   />
                 </div>
               </div>
@@ -357,6 +318,7 @@ function Profile() {
                     value={profileData.nickName}
                     onChange={handleChange}
                     placeholder="Your Nickname"
+                    maxLength={30}
                   />
                 </div>
               </div>
@@ -379,57 +341,24 @@ function Profile() {
 
               <div className="form-group">
                 <label htmlFor="email">Email Address</label>
-                <div className="email-field-container">
-                  {isEditingEmail ? (
-                    <div className="email-edit-section">
-                      <input
-                        type="email"
-                        value={newEmail}
-                        onChange={(e) => setNewEmail(e.target.value)}
-                        placeholder="Enter new email address"
-                        className="email-edit-input"
-                      />
-                      <div className="email-edit-buttons">
-                        <button 
-                          type="button" 
-                          onClick={handleSaveEmail}
-                          className="email-save-btn"
-                        >
-                          Save
-                        </button>
-                        <button 
-                          type="button" 
-                          onClick={handleCancelEmailEdit}
-                          className="email-cancel-btn"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="email-display-section">
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={profileData.email}
-                        disabled
-                        className="email-display-input"
-                      />
-                      <button 
-                        type="button" 
-                        onClick={handleEditEmail}
-                        className="change-email-btn"
-                      >
-                        Change Email
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={profileData.email}
+                  disabled
+                  style={{ opacity: 0.6, cursor: 'not-allowed', background: '#f3f4f6' }}
+                  title="Email is set during registration and cannot be changed"
+                />
               </div>
 
-              <button type="submit" className="enhanced-save-btn">
-                💾 Save Profile Changes
+              <button 
+                type="submit" 
+                className="enhanced-save-btn"
+                disabled={saving}
+                style={{ opacity: saving ? 0.7 : 1 }}
+              >
+                {saving ? '💾 Saving...' : '💾 Save Profile Changes'}
               </button>
             </form>
           </div>

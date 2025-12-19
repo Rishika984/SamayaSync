@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LogoutModal from './LogoutModal';
+// Import the logout function from your API file
+import { logout } from './services/authService'; 
 
 function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
+  
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false); 
 
   const isActive = (path) => location.pathname === path;
 
@@ -19,22 +23,37 @@ function Sidebar({ isOpen, onClose }) {
     setShowLogoutModal(true);
   };
 
-  const handleLogoutConfirm = () => {
-    // Clear any stored user data
-    localStorage.removeItem('userData');
-    localStorage.removeItem('userProfile');
-    localStorage.removeItem('completedSessions');
-    localStorage.removeItem('dailyPlans');
-    // Navigate to home page
-    navigate('/');
-    setShowLogoutModal(false);
-    if (onClose) {
-      onClose();
+  const handleLogoutConfirm = async () => {
+    setIsLoggingOut(true);
+    
+    try {
+     
+      await logout(); 
+    } catch (error) {
+      console.error("Server logout failed, forcing local logout:", error);
+      
+    } finally {
+      
+      localStorage.removeItem('userData');
+      localStorage.removeItem('userProfile');
+      localStorage.removeItem('completedSessions');
+      localStorage.removeItem('dailyPlans');
+    
+      setIsLoggingOut(false);
+      setShowLogoutModal(false);
+
+      if (onClose) {
+        onClose();
+      }
+
+      navigate('/');
     }
   };
 
   const handleLogoutCancel = () => {
-    setShowLogoutModal(false);
+    if (!isLoggingOut) {
+      setShowLogoutModal(false);
+    }
   };
 
   return (
@@ -88,6 +107,7 @@ function Sidebar({ isOpen, onClose }) {
         isOpen={showLogoutModal}
         onConfirm={handleLogoutConfirm}
         onCancel={handleLogoutCancel}
+        isLoading={isLoggingOut} 
       />
     </div>
   );

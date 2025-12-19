@@ -8,14 +8,12 @@ const register = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
 
-    // Check if user exists
     const userExists = await User.findOne({ email });
 
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create user
     const user = await User.create({
       fullName,
       email,
@@ -46,18 +44,18 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check for user email
     const user = await User.findOne({ email }).select('+password');
 
     if (user && (await user.matchPassword(password))) {
       const token = generateToken(user._id);
 
-      // Set HTTP-only cookie
+      const cookieExpire = parseInt(process.env.JWT_COOKIE_EXPIRE || 30);
+
       res.cookie('token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        secure: process.env.COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production',
+        sameSite: process.env.COOKIE_SAME_SITE || 'lax',
+        maxAge: cookieExpire * 24 * 60 * 60 * 1000,
       });
 
       res.json({
@@ -87,8 +85,44 @@ const getMe = async (req, res) => {
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
+      nickName: user.nickName,
+      studyGoal: user.studyGoal,
       role: user.role,
       joinDate: user.joinDate,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+const updateProfile = async (req, res) => {
+  try {
+    const { nickName, studyGoal } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update only allowed fields
+    if (nickName !== undefined) user.nickName = nickName.trim();
+    if (studyGoal !== undefined) user.studyGoal = studyGoal;
+
+    await user.save();
+
+    res.json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      nickName: user.nickName,
+      studyGoal: user.studyGoal,
+      role: user.role,
+      joinDate: user.joinDate,
+      message: 'Profile updated successfully',
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -115,5 +149,6 @@ module.exports = {
   register,
   login,
   getMe,
+  updateProfile,
   logout,
 };
