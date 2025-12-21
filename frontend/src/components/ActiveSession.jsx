@@ -1,12 +1,32 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getCurrentUser } from './services/authService';
 import { useLocation } from 'react-router-dom';
 import StartPrompt from './StartPrompt';
 import Sidebar from './Sidebar';
 
 function ActiveSession() {
+
+  const navigate = useNavigate();
+
+
+ useEffect(() => {
+  const checkAuth = async () => {
+    try {
+      await getCurrentUser(); // checks cookie
+    } catch {
+      navigate('/welcome', { replace: true });
+    }
+  };
+
+  checkAuth();
+}, [navigate]);
+
+
   const location = useLocation();
-  const showOnboard = location?.state?.showOnboard;
-  const [promptOpen, setPromptOpen] = useState(false);
+ const showOnboard = location?.state?.showOnboard;
+const [promptOpen, setPromptOpen] = useState(false);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const [minutes, setMinutes] = useState(25);
@@ -28,14 +48,15 @@ function ActiveSession() {
   const [showAddSubject, setShowAddSubject] = useState(false);
   const [newSubject, setNewSubject] = useState('');
 
-  useEffect(() => {
-    if (showOnboard) setPromptOpen(true);
-    // Load subjects from localStorage
-    const savedSubjects = localStorage.getItem('customSubjects');
-    if (savedSubjects) {
-      setSubjects(JSON.parse(savedSubjects));
-    }
-  }, [showOnboard]);
+ useEffect(() => {
+  const alreadyShown = sessionStorage.getItem('startPromptShown');
+
+  if (showOnboard && !alreadyShown) {
+    setPromptOpen(true);
+    sessionStorage.setItem('startPromptShown', 'true');
+  }
+}, [showOnboard]);
+
 
   const addNewSubject = () => {
     if (newSubject.trim() && !subjects.includes(newSubject.trim())) {
@@ -204,6 +225,7 @@ function ActiveSession() {
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
+  
 
   return (
     <div className="dashboard-layout">
@@ -354,11 +376,13 @@ function ActiveSession() {
           </div>
         </div>
       </main>
-      <StartPrompt 
-        open={promptOpen} 
-        onConfirm={() => setPromptOpen(false)} 
-        onCancel={() => setPromptOpen(false)} 
-      />
+     
+      <StartPrompt
+  open={promptOpen}
+  onConfirm={() => setPromptOpen(false)}
+  onCancel={() => setPromptOpen(false)}
+/>
+
     </div>
   );
 }

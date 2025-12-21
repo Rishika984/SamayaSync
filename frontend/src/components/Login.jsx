@@ -28,7 +28,7 @@ function Login() {
       console.log('Login successful:', response);
       
       // Navigate directly to active session with onboard prompt
-      navigate('/active-session', { 
+      navigate('/', { 
         state: { 
           showOnboard: true,
           user: response // Pass user data via state

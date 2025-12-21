@@ -5,17 +5,7 @@ const API = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
+  withCredentials: true, // REQUIRED for cookie auth
 });
-
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
 
 export default API;

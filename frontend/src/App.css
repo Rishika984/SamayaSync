@@ -7,7 +7,7 @@
 /* Import Poppins from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
 
-/* Theme variables */
+
 :root {
   --white: #ffffff;
   --primary: #6A6193;
@@ -15,8 +15,20 @@
   --muted: #64748b;
   --bg-mid: #F5EFFF;
   --muted-border: #e6e6f0;
+  --card-color: #CDC1FF;
+  /* --card-color: yellow;   */
+  --side-gradient-bg: linear-gradient(180deg, #ddd6fe 0%, #c4b5fd 100%) ;
+  
+
+  
   --card-radius: 12px;
   --card-shadow: 0 8px 24px rgba(16,24,40,0.06);
+}
+
+.dark-mode{
+
+  --side-gradient-bg: linear-gradient(180deg, #2c2c2c 0%, #12005c 100%) ; 
+
 }
 
 body {
@@ -919,7 +931,7 @@ body {
 /* Sidebar */
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #ddd6fe 0%, #c4b5fd 100%);
+  background: var(--side-gradient-bg);
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
@@ -1711,7 +1723,7 @@ body {
 
 /* ===== ACTIVE SESSION PAGE (FIGMA DESIGN) ===== */
 .figma-session-goal-card {
-  background: #CDC1FF;
+  background: var(--card-color);
   padding: 2rem;
   border-radius: 1rem;
   margin-bottom: 3rem;
@@ -1772,7 +1784,7 @@ body {
 
 /* Focus Card */
 .figma-focus-card {
-  background: #CDC1FF;
+  background: var(--card-color);
   padding: 2rem;
   border-radius: 1rem;
   text-align: center;
@@ -1893,7 +1905,7 @@ body {
 
 /* Subject Card */
 .figma-subject-card {
-  background: #CDC1FF;
+  background: var(--card-color);
   padding: 2rem;
   border-radius: 1rem;
 }

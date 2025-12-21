@@ -65,25 +65,28 @@ function Sidebar({ isOpen, onClose }) {
 
       <nav className="sidebar-nav">
         <Link 
-          to="/dashboard" 
-          className={`sidebar-link ${isActive('/dashboard') ? 'active' : ''}`}
-          onClick={handleLinkClick}
-        >
-          Dashboard
-        </Link>
-        <Link 
-          to="/active-session" 
-          className={`sidebar-link ${isActive('/active-session') ? 'active' : ''}`}
+          to="/" 
+          className={`sidebar-link ${isActive('/') ? 'active' : ''}`}
           onClick={handleLinkClick}
         >
           Active Session
         </Link>
+       
+        
         <Link 
           to="/session-log" 
           className={`sidebar-link ${isActive('/session-log') ? 'active' : ''}`}
           onClick={handleLinkClick}
         >
           Session Log
+        </Link>
+
+         <Link 
+          to="/dashboard" 
+          className={`sidebar-link ${isActive('/dashboard') ? 'active' : ''}`}
+          onClick={handleLinkClick}
+        >
+          Dashboard
         </Link>
       </nav>
 
