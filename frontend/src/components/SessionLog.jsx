@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 
-function SessionLog() {
+function SessionLog({ darkMode, setDarkMode }) {
   const [todaysSessions, setTodaysSessions] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -87,7 +87,13 @@ function SessionLog() {
         ☰
       </button>
       {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
-      <Sidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
+      <Sidebar
+  isOpen={isMobileMenuOpen}
+  onClose={closeMobileMenu}
+  darkMode={darkMode}
+  toggleDark={() => setDarkMode(prev => !prev)}
+/>
+
       <main className="dashboard-main">
         <div className="session-log-container">
           {todaysSessions.length === 0 ? (

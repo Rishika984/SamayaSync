@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import StatCard from './StatCard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-function Dashboard() {
+function Dashboard({ darkMode, setDarkMode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const showOnboard = location?.state?.showOnboard;
@@ -15,7 +15,7 @@ function Dashboard() {
   const [planFormOpen, setPlanFormOpen] = useState(false);
   const [newPlan, setNewPlan] = useState({
     subject: '',
-    expectedDuration: 60 // Default 1 hour in minutes
+    expectedDuration: 60 
   });
   const [stats, setStats] = useState({
     totalStudyHours: '0h',
@@ -359,7 +359,13 @@ function Dashboard() {
         ☰
       </button>
       {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
-      <Sidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
+      <Sidebar
+  isOpen={isMobileMenuOpen}
+  onClose={closeMobileMenu}
+  darkMode={darkMode}
+  toggleDark={() => setDarkMode(prev => !prev)}
+/>
+
       <main className="dashboard-main">
         <div className="dashboard-stats">
           <StatCard 
@@ -393,6 +399,7 @@ function Dashboard() {
                 <BarChart 
                   data={progressData}
                   margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
+                  
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis 
@@ -404,6 +411,7 @@ function Dashboard() {
                   />
                   <YAxis stroke="#64748b" fontSize={12} />
                   <Tooltip 
+                  //  cursor={{ fill: '#080809ff', opacity: 0.5 }}
                     contentStyle={{ 
                       background: '#fff', 
                       border: '1px solid #e0e0e0',
@@ -411,7 +419,7 @@ function Dashboard() {
                       fontSize: '12px'
                     }} 
                   />
-                  <Bar dataKey="hours" fill="#a78bfa" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="hours" fill="#a78bfa" radius={[8, 8, 0, 0]}  />
                 </BarChart>
               </ResponsiveContainer>
             </div>

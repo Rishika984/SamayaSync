@@ -5,67 +5,68 @@ const userSchema = mongoose.Schema(
   {
     fullName: {
       type: String,
-      required: [true, 'Please add a full name'],
+      required: true,
       trim: true,
     },
+
     email: {
       type: String,
-      required: [true, 'Please add an email'],
+      required: true,
       unique: true,
-      trim: true,
       lowercase: true,
-      match: [
-        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        'Please add a valid email',
-      ],
+      trim: true,
     },
+
     password: {
       type: String,
-      required: [true, 'Please add a password'],
       minlength: 6,
       select: false,
+      required: function () {
+        return this.provider === 'local';
+      },
     },
+
+    provider: {
+      type: String,
+      enum: ['local', 'google'],
+      default: 'local',
+    },
+
+    googleId: String,
+    avatar: String,
+
     nickName: {
       type: String,
-      trim: true,
       default: '',
-      maxlength: 30,
     },
+
     studyGoal: {
       type: String,
       default: '2 hours daily',
-      enum: ['30 minutes daily', '1 hour daily', '2 hours daily', '3 hours daily', '4+ hours daily'],
     },
+
     role: {
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
     },
+
     isActive: {
       type: Boolean,
       default: true,
     },
-    joinDate: {
-      type: Date,
-      default: Date.now,
-    },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-// Encrypt password before saving
+// hash password (skip Google users)
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    next();
-  }
-
+  if (!this.password || !this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Match password
+// match password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

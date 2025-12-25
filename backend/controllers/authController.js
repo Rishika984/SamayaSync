@@ -21,7 +21,7 @@ const register = async (req, res) => {
     });
 
     if (user) {
-      res.status(201).json({
+      return res.status(201).json({
         _id: user._id,
         fullName: user.fullName,
         email: user.email,
@@ -30,10 +30,10 @@ const register = async (req, res) => {
         message: 'Registration successful'
       });
     } else {
-      res.status(400).json({ message: 'Invalid user data' });
+      return res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -46,7 +46,19 @@ const login = async (req, res) => {
 
     const user = await User.findOne({ email }).select('+password');
 
-    if (user && (await user.matchPassword(password))) {
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Check if user signed up with Google
+    if (user.provider === 'google') {
+      return res.status(400).json({
+        message: 'This account uses Google sign-in. Please use the "Continue with Google" button.',
+      });
+    }
+
+    // Check password
+    if (await user.matchPassword(password)) {
       const token = generateToken(user._id);
 
       const cookieExpire = parseInt(process.env.JWT_COOKIE_EXPIRE || 30);
@@ -58,7 +70,7 @@ const login = async (req, res) => {
         maxAge: cookieExpire * 24 * 60 * 60 * 1000,
       });
 
-      res.json({
+      return res.json({
         _id: user._id,
         fullName: user.fullName,
         email: user.email,
@@ -67,10 +79,10 @@ const login = async (req, res) => {
         message: 'Login successful'
       });
     } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -81,7 +93,11 @@ const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     
-    res.json({
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
@@ -91,7 +107,7 @@ const getMe = async (req, res) => {
       joinDate: user.joinDate,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -108,13 +124,12 @@ const updateProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Update only allowed fields
     if (nickName !== undefined) user.nickName = nickName.trim();
     if (studyGoal !== undefined) user.studyGoal = studyGoal;
 
     await user.save();
 
-    res.json({
+    return res.json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
@@ -125,7 +140,7 @@ const updateProfile = async (req, res) => {
       message: 'Profile updated successfully',
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -139,9 +154,9 @@ const logout = async (req, res) => {
       expires: new Date(0),
     });
     
-    res.json({ message: 'Logout successful' });
+    return res.json({ message: 'Logout successful' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 

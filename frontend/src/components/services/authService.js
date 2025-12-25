@@ -20,6 +20,11 @@ export const login = async (credentials) => {
   }
 };
 
+// Google login - redirect to backend OAuth flow
+export const loginWithGoogle = () => {
+  window.location.href = 'http://localhost:5000/api/auth/google';
+};
+
 // Get current user
 export const getCurrentUser = async () => {
   try {

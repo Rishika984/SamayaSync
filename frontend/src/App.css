@@ -2,34 +2,92 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+    transition: all 0.4s ease-in-out;
 }
 
-/* Import Poppins from Google Fonts */
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
 
 
 :root {
   --white: #ffffff;
   --primary: #6A6193;
+
+  --head-title: #6A6193;
+
+
+  --subtitle: #6A6193;
+
+
+
   --cta: #A594F9;
+  --cta-hover: #9b87f5;
+
+
+  --sec-btn: #6A6193;
+  --sec-btn-hover: #57506f;
+
+
+
+  --bg: #faf8ff;
+
+
+  --textarea: #ffffffcc;
+
+  --textarea-focus: #fffffff2;
+
+
+  --textarea-color: #6A6193;
+
+
+  --timer-bg: #f8f9fa;
+
+
+  --timer-text: #6A6193;
+
+
+  --drop-dis: #f5f5f5;
+
+
   --muted: #64748b;
   --bg-mid: #F5EFFF;
+
   --muted-border: #e6e6f0;
-  --card-color: #CDC1FF;
-  /* --card-color: yellow;   */
-  --side-gradient-bg: linear-gradient(180deg, #ddd6fe 0%, #c4b5fd 100%) ;
-  
+  --card-color: #cec2ff;
 
-  
+  --side-gradient-bg: linear-gradient(180deg, #ddd6fe 0%, #c4b5fd 100%);
+
+
+
+
   --card-radius: 12px;
-  --card-shadow: 0 8px 24px rgba(16,24,40,0.06);
-}
-
-.dark-mode{
-
-  --side-gradient-bg: linear-gradient(180deg, #2c2c2c 0%, #12005c 100%) ; 
+  --nav-active:#1e293b;
+  
 
 }
+
+.dark {
+  --primary: #f3e8ff;
+  --head-title: #f3e8ff;
+  --subtitle: #c4b5fd;
+  --cta: #7c3aed;
+  --cta-hover: #6d28d9;
+  --sec-btn: #4c3a5e;
+  --sec-btn-hover: #8b5cf6;
+  --bg: #1a1625;
+  --textarea: #463b52;
+  --textarea-focus: #4e445c;
+  --textarea-color: #e9d5ff;
+  --timer-bg: #3a2f47;
+  --timer-text: #e9d5ff;
+  --drop-dis: #3a2f47;
+  --nav-active:#1e293b;
+    --muted: #bcb9b9;
+  --card-color: #2d2438;
+  --side-gradient-bg: #231c2e;
+}
+
+
 
 body {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -42,15 +100,7 @@ body {
 .app {
   min-height: 100vh;
   /* Simple clear white top and bottom bands with the requested middle color */
-  background: linear-gradient(
-    to bottom,
-    #ffffff 0%,
-    #ffffff 8%,
-    #F5EFFF 8%,
-    #F5EFFF 92%,
-    #ffffff 92%,
-    #ffffff 100%
-  );
+  background: var(--bg);
 }
 
 /* Header */
@@ -78,9 +128,11 @@ body {
   gap: 0.25rem;
   cursor: pointer;
 }
+
 .logo-hindi {
   font-size: 2rem;
 }
+
 .logo-english {
   font-size: 2rem;
   letter-spacing: 0.8px;
@@ -204,15 +256,15 @@ body {
   .header {
     padding: 1.5rem 2rem;
   }
-  
+
   .hero {
     padding: 4rem 1.5rem;
   }
-  
+
   .hero-title {
     font-size: 4rem;
   }
-  
+
   .hero-description {
     font-size: 1.25rem;
   }
@@ -225,36 +277,36 @@ body {
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(15px);
   }
-  
+
   .header-container {
     flex-direction: row;
     justify-content: space-between;
   }
-  
+
   .logo {
     font-size: 1.75rem;
   }
-  
+
   .logo-hindi,
   .logo-english {
     font-size: 1.5rem;
   }
-  
+
   .nav {
     gap: 1rem;
   }
-  
+
   .nav-link {
     font-size: 0.9rem;
     font-weight: 600;
   }
-  
+
   .login-button {
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
     border-radius: 8px;
   }
-  
+
   .hero-container {
     grid-template-columns: 1fr;
     gap: 3rem;
@@ -278,12 +330,12 @@ body {
     max-width: 500px;
     margin: 0 auto;
   }
-  
+
   .hero-content {
     gap: 2.5rem;
     max-width: none;
   }
-  
+
   .cta-button {
     padding: 1rem 2rem;
     font-size: 1.1rem;
@@ -306,36 +358,36 @@ body {
     padding: 1rem 1rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   }
-  
+
   .logo {
     font-size: 1.5rem;
   }
-  
+
   .logo-hindi,
   .logo-english {
     font-size: 1.25rem;
   }
-  
+
   .nav {
     gap: 0.75rem;
   }
-  
+
   .nav-link {
     font-size: 0.85rem;
     font-weight: 600;
   }
-  
+
   .login-button {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
     border-radius: 8px;
   }
-  
+
   .hero {
     padding: 2.5rem 1rem;
     background: #F5EFFF;
   }
-  
+
   .hero-container {
     gap: 2.5rem;
   }
@@ -352,12 +404,12 @@ body {
     max-width: 400px;
     margin: 0 auto;
   }
-  
+
   .hero-content {
     gap: 2rem;
     padding: 0 0.5rem;
   }
-  
+
   .cta-button {
     padding: 1rem 2rem;
     font-size: 1rem;
@@ -378,35 +430,35 @@ body {
   .header {
     padding: 0.875rem 0.75rem;
   }
-  
+
   .header-container {
     gap: 0.5rem;
   }
-  
+
   .logo {
     font-size: 1.3rem;
   }
-  
+
   .logo-hindi,
   .logo-english {
     font-size: 1.1rem;
   }
-  
+
   .nav {
     gap: 0.5rem;
   }
-  
+
   .nav-link {
     font-size: 0.8rem;
     font-weight: 600;
   }
-  
+
   .login-button {
     padding: 0.4rem 0.8rem;
     font-size: 0.8rem;
     border-radius: 6px;
   }
-  
+
   .hero {
     padding: 2rem 0.75rem;
     background: #F5EFFF;
@@ -422,11 +474,11 @@ body {
     line-height: 1.4;
     max-width: 320px;
   }
-  
+
   .hero-content {
     gap: 1.75rem;
   }
-  
+
   .cta-button {
     padding: 0.875rem 1.5rem;
     font-size: 0.9rem;
@@ -442,7 +494,8 @@ body {
 
 .image {
   width: 100%;
-  max-width: 560px; /* increase image slightly to better balance larger text */
+  max-width: 560px;
+  /* increase image slightly to better balance larger text */
   height: auto;
   border-radius: 1rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
@@ -465,50 +518,64 @@ body {
 
 .auth-left {
   background: #F5EFFF;
-  padding: 3.5rem 3rem 4.5rem; /* give extra bottom padding so content breathes above the decor */
+  padding: 3.5rem 3rem 4.5rem;
+  /* give extra bottom padding so content breathes above the decor */
   display: flex;
   flex-direction: column;
-  position: relative; /* allow absolutely positioned decorative image */
-  overflow: hidden; /* clip decorative image to panel edges */
+  position: relative;
+  /* allow absolutely positioned decorative image */
+  overflow: hidden;
+  /* clip decorative image to panel edges */
 }
 
 .auth-logo {
   display: flex;
   align-items: center;
-  font-size: 2.25rem; /* larger site name */
+  font-size: 2.25rem;
+  /* larger site name */
   font-weight: 700;
   gap: 0.25rem;
   text-decoration: none;
-  margin-bottom: 2rem; /* reduce gap so content moves up a bit */
+  margin-bottom: 2rem;
+  /* reduce gap so content moves up a bit */
 }
 
 .auth-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* place content from top down under logo */
-  align-items: center; /* center content horizontally */
+  justify-content: flex-start;
+  /* place content from top down under logo */
+  align-items: center;
+  /* center content horizontally */
   text-align: center;
-  margin-top: -8px; /* nudge content (title+icon) slightly up */
+  margin-top: -8px;
+  /* nudge content (title+icon) slightly up */
 }
 
 .auth-title {
-  font-size: 3rem; /* larger login/signup title */
+  font-size: 3rem;
+  /* larger login/signup title */
   color: var(--primary);
-  margin-bottom: 0.25rem; /* tighten spacing to bring subtitle closer */
+  margin-bottom: 0.25rem;
+  /* tighten spacing to bring subtitle closer */
   font-weight: 700;
 }
 
 .auth-subtitle {
-  font-size: 1.125rem; /* slightly larger subtitle */
+  font-size: 1.125rem;
+  /* slightly larger subtitle */
   color: var(--muted);
-  margin-bottom: 1rem; /* reduce so icon sits closer */
+  margin-bottom: 1rem;
+  /* reduce so icon sits closer */
 }
 
 .auth-icon {
-  width: 320px; /* increase icon size */
+  width: 320px;
+  /* increase icon size */
   height: 320px;
-  margin-top: 0.25rem; /* lift icon up */
+  margin-top: 0.25rem;
+  /* lift icon up */
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
@@ -516,11 +583,13 @@ body {
 }
 
 .auth-logo .logo-hindi {
-  font-size: 2rem; /* match sizes */
+  font-size: 2rem;
+  /* match sizes */
 }
 
 .auth-logo .logo-english {
-  font-size: 2rem; /* match sizes */
+  font-size: 2rem;
+  /* match sizes */
   letter-spacing: 0.8px;
 }
 
@@ -539,12 +608,16 @@ body {
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 110%; /* a touch wider so it slightly bleeds to the sides for a seamless feel */
+  width: 110%;
+  /* a touch wider so it slightly bleeds to the sides for a seamless feel */
   height: auto;
-  max-height: 340px; /* slightly taller to better fill the panel border */
-  transform: translateX(-5%) translateY(6%); /* shift left and lift slightly into the panel */
+  max-height: 340px;
+  /* slightly taller to better fill the panel border */
+  transform: translateX(-5%) translateY(6%);
+  /* shift left and lift slightly into the panel */
   object-fit: cover;
-  opacity: 0.96; /* slightly reduce opacity for subtlety */
+  opacity: 0.96;
+  /* slightly reduce opacity for subtlety */
   pointer-events: none;
   z-index: 0;
 }
@@ -558,7 +631,8 @@ body {
 
 @media (max-width: 800px) {
   .auth-decor {
-    display: none; /* hide decorative image on small screens to save space */
+    display: none;
+    /* hide decorative image on small screens to save space */
   }
 }
 
@@ -582,17 +656,20 @@ body {
 .form-group label {
   display: block;
   color: var(--muted);
-  font-size: 1.05rem; /* larger label text */
+  font-size: 1.05rem;
+  /* larger label text */
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
 
 .form-group input {
   width: 100%;
-  padding: 1rem 1.1rem; /* slightly more padding */
+  padding: 1rem 1.1rem;
+  /* slightly more padding */
   border: 1px solid var(--muted-border);
   border-radius: 10px;
-  font-size: 1.05rem; /* increase input font size */
+  font-size: 1.05rem;
+  /* increase input font size */
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   background: var(--white);
 }
@@ -600,7 +677,7 @@ body {
 .form-group input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 6px 18px rgba(106,97,147,0.08);
+  box-shadow: 0 6px 18px rgba(106, 97, 147, 0.08);
 }
 
 .form-group input:disabled {
@@ -613,9 +690,11 @@ body {
   background: var(--cta);
   color: var(--white);
   border: none;
-  padding: 1.05rem; /* slightly larger button */
+  padding: 1.05rem;
+  /* slightly larger button */
   border-radius: 10px;
-  font-size: 1.05rem; /* slightly larger button text */
+  font-size: 1.05rem;
+  /* slightly larger button text */
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.06s ease;
@@ -699,24 +778,24 @@ body {
   .auth-page {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .auth-left {
     padding: 2.5rem 2rem 3rem;
   }
-  
+
   .auth-right {
     padding: 2.5rem 2rem;
   }
-  
+
   .auth-title {
     font-size: 2.5rem;
   }
-  
+
   .auth-icon {
     width: 280px;
     height: 280px;
   }
-  
+
   .auth-form {
     padding: 2rem;
   }
@@ -728,68 +807,68 @@ body {
     grid-template-columns: 1fr;
     min-height: 100vh;
   }
-  
+
   .auth-left {
     padding: 2rem 1.5rem 1rem;
     min-height: 40vh;
   }
-  
+
   .auth-right {
     padding: 1.5rem;
   }
-  
+
   .auth-logo {
     font-size: 1.75rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .auth-logo .logo-hindi,
   .auth-logo .logo-english {
     font-size: 1.5rem;
   }
-  
+
   .auth-title {
     font-size: 2rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .auth-subtitle {
     font-size: 1rem;
     margin-bottom: 1rem;
   }
-  
+
   .auth-icon {
     width: 200px;
     height: 200px;
     margin: 0.5rem 0;
   }
-  
+
   .auth-form {
     padding: 1.5rem;
     max-width: none;
     box-shadow: none;
     background: transparent;
   }
-  
+
   .form-group {
     margin-bottom: 1.25rem;
   }
-  
+
   .form-group label {
     font-size: 0.95rem;
   }
-  
+
   .form-group input {
     padding: 0.875rem 1rem;
     font-size: 1rem;
   }
-  
+
   .auth-button,
   .google-button {
     padding: 0.875rem;
     font-size: 1rem;
   }
-  
+
   .auth-decor {
     display: none;
   }
@@ -801,71 +880,71 @@ body {
     padding: 1.5rem 1rem 0.5rem;
     min-height: 35vh;
   }
-  
+
   .auth-right {
     padding: 1rem;
   }
-  
+
   .auth-logo {
     font-size: 1.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .auth-logo .logo-hindi,
   .auth-logo .logo-english {
     font-size: 1.25rem;
   }
-  
+
   .auth-title {
     font-size: 1.75rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .auth-subtitle {
     font-size: 0.875rem;
     margin-bottom: 0.75rem;
   }
-  
+
   .auth-icon {
     width: 150px;
     height: 150px;
     margin: 0.25rem 0;
   }
-  
+
   .auth-form {
     padding: 1rem;
   }
-  
+
   .form-group {
     margin-bottom: 1rem;
   }
-  
+
   .form-group label {
     font-size: 0.875rem;
     margin-bottom: 0.375rem;
   }
-  
+
   .form-group input {
     padding: 0.75rem 0.875rem;
     font-size: 0.875rem;
     border-radius: 8px;
   }
-  
+
   .auth-button,
   .google-button {
     padding: 0.75rem;
     font-size: 0.875rem;
     border-radius: 8px;
   }
-  
+
   .auth-divider {
     margin: 1rem 0 0.75rem 0;
   }
-  
+
   .auth-divider span {
     font-size: 0.8rem;
   }
-  
+
   .auth-footer {
     margin-top: 1rem;
     font-size: 0.875rem;
@@ -878,42 +957,42 @@ body {
     padding: 1rem 0.75rem 0.25rem;
     min-height: 30vh;
   }
-  
+
   .auth-right {
     padding: 0.75rem;
   }
-  
+
   .auth-logo {
     font-size: 1.25rem;
   }
-  
+
   .auth-logo .logo-hindi,
   .auth-logo .logo-english {
     font-size: 1rem;
   }
-  
+
   .auth-title {
     font-size: 1.5rem;
   }
-  
+
   .auth-subtitle {
     font-size: 0.8rem;
   }
-  
+
   .auth-icon {
     width: 120px;
     height: 120px;
   }
-  
+
   .auth-form {
     padding: 0.75rem;
   }
-  
+
   .form-group input {
     padding: 0.625rem 0.75rem;
     font-size: 0.8rem;
   }
-  
+
   .auth-button,
   .google-button {
     padding: 0.625rem;
@@ -925,7 +1004,7 @@ body {
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
-  background: #faf8ff;
+  background: var(--bg);
 }
 
 /* Sidebar */
@@ -950,6 +1029,34 @@ body {
   text-decoration: none;
   margin-bottom: 3rem;
 }
+.toggle-dark-mode{
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 30px;
+
+  height: 2.5rem;
+  width: 2.5rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.4rem;
+  border-radius: 8px;
+  color: var(--primary);
+  transition: box-shadow 0.4s ease-in-out;
+
+}
+
+.toggle-dark-mode:hover{
+  
+  box-shadow: 0px 0px 3px rgba(100, 100, 100, 0.852);  
+}
+
+
 
 .sidebar-nav {
   flex: 1;
@@ -959,7 +1066,7 @@ body {
 }
 
 .sidebar-link {
-  color: #64748b;
+  color: var(--muted);
   text-decoration: none;
   padding: 0.875rem 1rem;
   border-radius: 0.5rem;
@@ -974,8 +1081,8 @@ body {
 }
 
 .sidebar-link.active {
-  background: rgba(255, 255, 255, 0.8);
-  color: #1e293b;
+  background: var(--textarea);
+  color: var(--head-title);
   font-weight: 600;
 }
 
@@ -1034,7 +1141,7 @@ body {
     position: relative;
     display: block;
   }
-  
+
   .sidebar {
     position: fixed;
     width: 75%;
@@ -1043,15 +1150,15 @@ body {
     z-index: 1000;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   }
-  
+
   .sidebar.mobile-open {
     left: 0;
   }
-  
+
   .sidebar-overlay.active {
     display: block;
   }
-  
+
   .mobile-menu-toggle {
     display: flex;
     align-items: center;
@@ -1060,7 +1167,7 @@ body {
     margin: 1rem;
     align-self: flex-start;
   }
-  
+
   .dashboard-main {
     position: relative;
     margin: 0;
@@ -1068,17 +1175,17 @@ body {
     width: 100%;
     min-height: 100vh;
   }
-  
+
   .onboard-box {
     margin-top: 1rem;
     padding: 1rem;
   }
-  
+
   .sidebar-logo {
     font-size: 2rem;
     margin-bottom: 2rem;
   }
-  
+
   .sidebar {
     padding: 1.5rem;
   }
@@ -1089,30 +1196,30 @@ body {
     width: 75%;
     left: -75%;
   }
-  
+
   .dashboard-main {
     position: relative;
     margin: 0;
     padding: 0.5rem;
     width: 100%;
   }
-  
+
   .mobile-menu-toggle {
     width: 45px;
     height: 45px;
     font-size: 1.25rem;
     margin: 0.75rem;
   }
-  
+
   .sidebar-logo {
     font-size: 1.75rem;
   }
-  
+
   .sidebar-link {
     padding: 1rem;
     font-size: 1rem;
   }
-  
+
   .onboard-box {
     padding: 0.75rem;
     margin: 0.5rem;
@@ -1130,14 +1237,16 @@ body {
 .onboard-box {
   background: var(--white);
   border-radius: 12px;
-  padding: 1.125rem 1.5rem; 
-  box-shadow: 0 8px 24px rgba(16,24,40,0.06);
+  padding: 1.125rem 1.5rem;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
   margin-bottom: 1.5rem;
   max-width: 840px;
 }
+
 .onboard-box .onboard-content h3 {
   margin: 0;
-  color: var(--primary); /* same color as landing page titles */
+  color: var(--primary);
+  /* same color as landing page titles */
   font-size: 1.125rem;
   font-weight: 700;
 }
@@ -1149,31 +1258,36 @@ body {
   top: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
+
 .prompt-modal {
   background: var(--white);
   padding: 1.5rem 1.75rem;
   border-radius: 12px;
   box-shadow: var(--card-shadow);
-  max-width: 520px; /* slightly wider modal */
+  max-width: 520px;
+  /* slightly wider modal */
   width: 92%;
   text-align: center;
 }
+
 .prompt-message {
   margin: 0 0 1rem 0;
   color: var(--primary);
   font-weight: 700;
 }
+
 .prompt-actions {
   display: flex;
   gap: 0.75rem;
   justify-content: center;
 }
+
 .prompt-btn {
   padding: 0.6rem 1rem;
   border-radius: 8px;
@@ -1181,10 +1295,12 @@ body {
   cursor: pointer;
   font-weight: 600;
 }
+
 .prompt-cancel {
   background: #f1f5f9;
   color: #475569;
 }
+
 .prompt-ok {
   background: var(--cta);
   color: var(--white);
@@ -1236,7 +1352,7 @@ body {
 }
 
 .stat-card {
-  background: #c4b5fd;
+  background: var(--card-color);
   padding: 1.5rem;
   border-radius: 1rem;
   text-align: center;
@@ -1263,7 +1379,7 @@ body {
 
 .stat-label {
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--subtitle);
 }
 
 .stat-tooltip {
@@ -1302,19 +1418,19 @@ body {
 
 .progress-section,
 .todays-plan-section {
-  background: #c4b5fd;
+  background: var(--card-color);
   padding: 2rem;
   border-radius: 1rem;
 }
 
 .section-title {
-  color: #64748b;
+  color: #ffffff;
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
 .chart-container {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--bg);
   padding: 1rem;
   border-radius: 0.5rem;
 }
@@ -1403,7 +1519,8 @@ body {
   color: #9ca3af;
 }
 
-.save-btn, .cancel-btn {
+.save-btn,
+.cancel-btn {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
@@ -1490,17 +1607,17 @@ body {
     gap: 1.25rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .dashboard-content {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
-  
+
   .progress-section,
   .todays-plan-section {
     padding: 1.75rem;
   }
-  
+
   .section-title {
     font-size: 1.25rem;
     margin-bottom: 1.25rem;
@@ -1515,25 +1632,25 @@ body {
     margin-bottom: 1.5rem;
     padding: 0 0.5rem;
   }
-  
+
   .stat-card {
     padding: 1.25rem;
   }
-  
+
   .stat-icon {
     font-size: 1.75rem;
     margin-bottom: 0.375rem;
   }
-  
+
   .stat-value {
     font-size: 1.75rem;
     margin-bottom: 0.125rem;
   }
-  
+
   .stat-label {
     font-size: 0.8rem;
   }
-  
+
   .stat-tooltip {
     font-size: 0.8rem;
     padding: 0.625rem 0.875rem;
@@ -1541,63 +1658,63 @@ body {
     max-width: 200px;
     text-align: center;
   }
-  
+
   .dashboard-content {
     grid-template-columns: 1fr;
     gap: 1rem;
     padding: 0 0.5rem;
   }
-  
+
   .progress-section,
   .todays-plan-section {
     padding: 1.5rem;
   }
-  
+
   .section-title {
     font-size: 1.125rem;
     margin-bottom: 1rem;
   }
-  
+
   .chart-container {
     padding: 0.75rem;
   }
-  
+
   .plan-list {
     gap: 0.75rem;
   }
-  
+
   .plan-item {
     padding: 0.875rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .plan-info {
     width: 100%;
   }
-  
+
   .delete-btn {
     align-self: flex-end;
     margin-top: 0.5rem;
   }
-  
+
   .add-plan-form {
     flex-direction: column;
     gap: 0.75rem;
   }
-  
+
   .add-plan-form input,
   .add-plan-form select {
     padding: 0.75rem;
     font-size: 0.875rem;
   }
-  
+
   .form-buttons {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .form-buttons button {
     width: 100%;
     padding: 0.75rem;
@@ -1611,66 +1728,66 @@ body {
     gap: 0.75rem;
     padding: 0 0.25rem;
   }
-  
+
   .stat-card {
     padding: 1rem;
   }
-  
+
   .stat-icon {
     font-size: 1.5rem;
   }
-  
+
   .stat-value {
     font-size: 1.5rem;
   }
-  
+
   .stat-label {
     font-size: 0.75rem;
   }
-  
+
   .dashboard-content {
     padding: 0 0.25rem;
   }
-  
+
   .progress-section,
   .todays-plan-section {
     padding: 1rem;
   }
-  
+
   .section-title {
     font-size: 1rem;
     margin-bottom: 0.75rem;
   }
-  
+
   .chart-container {
     padding: 0.5rem;
     min-width: 320px;
     overflow-x: auto;
   }
-  
+
   .plan-item {
     padding: 0.75rem;
   }
-  
+
   .plan-subject {
     font-size: 0.875rem;
   }
-  
+
   .plan-time {
     font-size: 0.8rem;
   }
-  
+
   .delete-btn {
     width: 20px;
     height: 20px;
     font-size: 0.875rem;
   }
-  
+
   .add-plan-btn {
     padding: 0.375rem 0.75rem;
     font-size: 0.8rem;
   }
-  
+
   .no-plans {
     padding: 1.5rem 1rem;
     font-size: 0.875rem;
@@ -1682,40 +1799,40 @@ body {
   .dashboard-stats {
     gap: 0.5rem;
   }
-  
+
   .stat-card {
     padding: 0.75rem;
   }
-  
+
   .stat-icon {
     font-size: 1.25rem;
   }
-  
+
   .stat-value {
     font-size: 1.25rem;
   }
-  
+
   .stat-label {
     font-size: 0.7rem;
   }
-  
+
   .progress-section,
   .todays-plan-section {
     padding: 0.75rem;
   }
-  
+
   .section-title {
     font-size: 0.9rem;
   }
-  
+
   .plan-item {
     padding: 0.625rem;
   }
-  
+
   .plan-subject {
     font-size: 0.8rem;
   }
-  
+
   .plan-time {
     font-size: 0.75rem;
   }
@@ -1730,7 +1847,7 @@ body {
 }
 
 .figma-session-goal-title {
-  color: #6A6193;
+  color: var(--head-title);
   font-size: 1.5rem;
   margin-bottom: 1rem;
   font-weight: 600;
@@ -1745,11 +1862,11 @@ body {
 
 .figma-session-goal-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--textarea);
   border: 1px solid rgba(106, 97, 147, 0.3);
   border-radius: 8px;
   padding: 1rem;
-  color: #6A6193;
+  color: var(--textarea-color);
   font-size: 1rem;
   line-height: 1.6;
   font-family: 'Poppins', sans-serif;
@@ -1761,7 +1878,7 @@ body {
 .figma-session-goal-input:focus {
   outline: none;
   border-color: #6A6193;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--textarea-focus);
   box-shadow: 0 0 0 3px rgba(106, 97, 147, 0.1);
 }
 
@@ -1791,14 +1908,14 @@ body {
 }
 
 .figma-focus-title {
-  color: #6A6193;
+  color: var(--head-title);
   font-size: 1.5rem;
   margin-bottom: 1rem;
   font-weight: 600;
 }
 
 .figma-focus-subtitle {
-  color: #6A6193;
+  color: var(--subtitle);
   font-size: 0.95rem;
   line-height: 1.5;
   margin-bottom: 2rem;
@@ -1813,7 +1930,7 @@ body {
 }
 
 .figma-timer-display {
-  background: #f8f9fa;
+  background: var(--timer-bg);
   border-radius: 0.5rem;
   padding: 1rem 1.5rem;
   display: flex;
@@ -1831,7 +1948,7 @@ body {
 
 .figma-timer-unit {
   font-size: 1rem;
-  color: #6A6193;
+  color: var(--timer-text);
   font-weight: 500;
 }
 
@@ -1845,11 +1962,11 @@ body {
   width: 40px;
   height: 40px;
   border: none;
-  background: #f8f9fa;
+  background: var(--timer-bg);
   border-radius: 0.25rem;
   cursor: pointer;
   font-size: 1.2rem;
-  color: #6A6193;
+  color: var(--timer-text);
   transition: all 0.2s ease;
 }
 
@@ -1870,7 +1987,7 @@ body {
 }
 
 .figma-start-btn {
-  background: #6A6193;
+  background: var(--sec-btn);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -1883,7 +2000,7 @@ body {
 }
 
 .figma-start-btn:hover {
-  background: #57506f;
+  background: var(--sec-btn-hover);
   transform: translateY(-1px);
 }
 
@@ -1911,7 +2028,7 @@ body {
 }
 
 .figma-subject-title {
-  color: #6A6193;
+  color: var(--head-title);
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
   font-weight: 600;
@@ -1946,17 +2063,17 @@ body {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .figma-session-goal-card,
   .figma-focus-card,
   .figma-subject-card {
     padding: 1.75rem;
   }
-  
+
   .figma-timer {
     font-size: 3.5rem;
   }
-  
+
   .figma-subject-grid {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
@@ -1970,25 +2087,25 @@ body {
     padding: 1rem;
     width: 100%;
   }
-  
+
   .figma-session-content {
     grid-template-columns: 1fr;
     gap: 1.5rem;
     padding: 0;
     margin-top: 2.5rem;
   }
-  
+
   .figma-session-goal-card {
     padding: 1.5rem;
     margin-bottom: 0;
   }
-  
+
   .figma-focus-card,
   .figma-subject-card {
     padding: 1.5rem;
     margin: 0;
   }
-  
+
   .figma-session-goal-title,
   .figma-focus-title,
   .figma-subject-title {
@@ -1996,9 +2113,9 @@ body {
     margin-bottom: 1.25rem;
     font-weight: 700;
     text-align: center;
-    color: #6A6193;
+    color: var(--head-title);
   }
-  
+
   .figma-focus-subtitle {
     font-size: 1rem;
     line-height: 1.6;
@@ -2007,44 +2124,44 @@ body {
     color: #64748b;
     padding: 0 0.5rem;
   }
-  
+
   .figma-session-goal-input {
     min-height: 90px;
     font-size: 1rem;
     padding: 1rem;
     line-height: 1.5;
   }
-  
+
   .subject-selection {
     margin-bottom: 2.5rem;
-    background: rgba(255, 255, 255, 0.5);
+    background: #ffffff80;
     padding: 1.5rem;
     border-radius: 12px;
     border: 1px solid rgba(106, 97, 147, 0.15);
   }
-  
+
   .subject-selection label {
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 1rem;
     display: block;
-    color: #6A6193;
+    color: var(--textarea-color);
     text-align: center;
   }
-  
+
   .subject-dropdown-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .subject-dropdown {
     padding: 1rem;
     font-size: 1rem;
     border-radius: 8px;
     border: 2px solid #e2e8f0;
   }
-  
+
   .add-subject-btn {
     padding: 0.875rem 1rem;
     font-size: 0.9rem;
@@ -2054,7 +2171,7 @@ body {
     border-radius: 8px;
     font-weight: 600;
   }
-  
+
   .figma-timer-section {
     margin: 2.5rem 0;
     display: flex;
@@ -2066,24 +2183,24 @@ body {
     border-radius: 16px;
     border: 2px solid rgba(106, 97, 147, 0.1);
   }
-  
+
   .figma-timer-display {
     text-align: center;
     margin-bottom: 1rem;
   }
-  
+
   .figma-timer-value {
     font-size: 3.5rem;
     font-weight: 800;
     color: #6A6193;
   }
-  
+
   .figma-timer-unit {
     font-size: 1.25rem;
     color: #64748b;
     margin-left: 0.5rem;
   }
-  
+
   .pomodoro-progress {
     background: rgba(139, 92, 246, 0.05);
     padding: 1.5rem;
@@ -2092,7 +2209,7 @@ body {
     border: 2px solid rgba(139, 92, 246, 0.15);
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
   }
-  
+
   .progress-info {
     display: flex;
     flex-direction: column;
@@ -2100,26 +2217,26 @@ body {
     text-align: center;
     margin-bottom: 1rem;
   }
-  
+
   .progress-info span {
     font-size: 0.95rem;
     font-weight: 600;
     color: #64748b;
   }
-  
+
   .progress-bar {
     height: 8px;
     background: #e2e8f0;
     border-radius: 4px;
     overflow: hidden;
   }
-  
+
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, #8b5cf6, #a78bfa);
     transition: width 0.3s ease;
   }
-  
+
   .figma-timer-controls {
     display: flex;
     gap: 1rem;
@@ -2127,7 +2244,7 @@ body {
     max-width: 200px;
     margin: 0 auto;
   }
-  
+
   .figma-timer-btn {
     width: 50px;
     height: 50px;
@@ -2143,12 +2260,12 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
   }
-  
+
   .figma-timer-btn:hover {
     border-color: #8b5cf6;
     background: #f8fafc;
   }
-  
+
   .figma-session-buttons {
     display: flex;
     flex-direction: column;
@@ -2156,7 +2273,7 @@ body {
     margin-top: 2.5rem;
     padding: 0 1rem;
   }
-  
+
   .figma-start-btn {
     width: 100%;
     padding: 1.25rem;
@@ -2169,12 +2286,12 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
   }
-  
+
   .figma-start-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
   }
-  
+
   .figma-reset-btn {
     width: 100%;
     padding: 1rem;
@@ -2187,56 +2304,56 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
   }
-  
+
   .figma-reset-btn:hover {
     background: #f1f5f9;
     border-color: #cbd5e1;
   }
-  
+
   .current-subject-display {
     text-align: center;
     padding: 2rem 1rem;
   }
-  
+
   .selected-subject {
     font-size: 1.5rem;
     font-weight: 700;
     color: #6A6193;
     margin-bottom: 0.75rem;
   }
-  
+
   .session-status {
     font-size: 1rem;
     color: #64748b;
     font-weight: 600;
   }
-  
+
   .no-subject {
     font-size: 1.1rem;
     color: #94a3b8;
     font-style: italic;
   }
-  
+
   .add-subject-section {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     margin-top: 1rem;
   }
-  
+
   .add-subject-input {
     padding: 1rem;
     font-size: 1rem;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
   }
-  
+
   .add-subject-buttons {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
   }
-  
+
   .add-subject-save-btn {
     width: 100%;
     padding: 1rem;
@@ -2247,7 +2364,7 @@ body {
     border: none;
     border-radius: 8px;
   }
-  
+
   .add-subject-cancel-btn {
     width: 100%;
     padding: 1rem;
@@ -2268,23 +2385,23 @@ body {
     padding: 0.75rem;
     width: 100%;
   }
-  
+
   .figma-session-content {
     gap: 1.25rem;
     margin-top: 2rem;
   }
-  
+
   .figma-session-goal-card {
     padding: 1.25rem;
     margin-bottom: 0;
   }
-  
+
   .figma-focus-card,
   .figma-subject-card {
     padding: 1.25rem;
     border-radius: 16px;
   }
-  
+
   .figma-session-goal-title,
   .figma-focus-title,
   .figma-subject-title {
@@ -2294,7 +2411,7 @@ body {
     text-align: center;
     color: #6A6193;
   }
-  
+
   .figma-focus-subtitle {
     font-size: 0.95rem;
     line-height: 1.5;
@@ -2303,13 +2420,13 @@ body {
     color: #64748b;
     padding: 0 0.25rem;
   }
-  
+
   .figma-session-goal-input {
     min-height: 80px;
     font-size: 0.95rem;
     padding: 1rem;
   }
-  
+
   .subject-selection {
     margin-bottom: 2rem;
     padding: 1.25rem;
@@ -2317,24 +2434,24 @@ body {
     border-radius: 12px;
     border: 1px solid rgba(106, 97, 147, 0.1);
   }
-  
+
   .subject-selection label {
     font-size: 1rem;
     font-weight: 700;
     text-align: center;
     margin-bottom: 1rem;
   }
-  
+
   .subject-dropdown {
     padding: 0.875rem;
     font-size: 0.95rem;
   }
-  
+
   .add-subject-btn {
     padding: 0.75rem;
     font-size: 0.875rem;
   }
-  
+
   .figma-timer-section {
     margin: 2rem 0;
     gap: 1.5rem;
@@ -2343,65 +2460,65 @@ body {
     border-radius: 14px;
     border: 2px solid rgba(106, 97, 147, 0.1);
   }
-  
+
   .figma-timer-value {
     font-size: 3rem;
   }
-  
+
   .figma-timer-unit {
     font-size: 1.125rem;
   }
-  
+
   .figma-timer-controls {
     max-width: 180px;
   }
-  
+
   .figma-timer-btn {
     width: 45px;
     height: 45px;
     font-size: 1.125rem;
   }
-  
+
   .figma-session-buttons {
     margin-top: 2rem;
     gap: 1rem;
     padding: 0 0.75rem;
   }
-  
+
   .figma-start-btn {
     padding: 1.125rem;
     font-size: 1rem;
   }
-  
+
   .figma-reset-btn {
     padding: 0.875rem;
     font-size: 0.95rem;
   }
-  
+
   .selected-subject {
     font-size: 1.375rem;
   }
-  
+
   .session-status {
     font-size: 0.95rem;
   }
-  
+
   .figma-subject-grid {
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }
-  
+
   .figma-subject-item {
     padding: 0.625rem;
     font-size: 0.8rem;
     text-align: center;
   }
-  
+
   .add-subject-input {
     padding: 0.625rem;
     font-size: 0.8rem;
   }
-  
+
   .add-subject-buttons button {
     padding: 0.625rem;
     font-size: 0.8rem;
@@ -2416,37 +2533,37 @@ body {
     padding: 0.25rem;
     width: 100%;
   }
-  
+
   .figma-session-goal-card,
   .figma-focus-card,
   .figma-subject-card {
     padding: 0.75rem;
     margin: 0;
   }
-  
+
   .figma-session-goal-title,
   .figma-focus-title,
   .figma-subject-title {
     font-size: 0.9rem;
   }
-  
+
   .figma-timer {
     font-size: 2rem;
   }
-  
+
   .figma-timer-text {
     font-size: 0.8rem;
   }
-  
+
   .figma-timer-controls {
     max-width: 200px;
   }
-  
+
   .figma-timer-controls button {
     padding: 0.625rem 0.75rem;
     font-size: 0.75rem;
   }
-  
+
   .figma-session-buttons button {
     padding: 0.75rem;
     font-size: 0.75rem;
@@ -2536,7 +2653,7 @@ body {
 
 .subject-selection label {
   display: block;
-  color: #6A6193;
+  color: var(--textarea-color);
   font-size: 0.95rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
@@ -2548,8 +2665,8 @@ body {
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 0.95rem;
-  background: white;
-  color: #6A6193;
+  background: var(--textarea);
+  color: var(--timer-text);
   font-family: 'Poppins', sans-serif;
 }
 
@@ -2559,7 +2676,7 @@ body {
 }
 
 .subject-dropdown:disabled {
-  background: #f5f5f5;
+  background: var(--drop-dis);
   cursor: not-allowed;
 }
 
@@ -2594,11 +2711,11 @@ body {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .session-log-container {
     padding: 1rem;
   }
-  
+
   .figma-session-hours {
     font-size: 2rem;
   }
@@ -2711,7 +2828,7 @@ body {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .email-edit-buttons {
     flex-direction: column;
   }
@@ -2719,7 +2836,7 @@ body {
 
 /* ===== POMODORO PROGRESS STYLES ===== */
 .pomodoro-progress {
-  background: rgba(255, 255, 255, 0.8);
+  background: --textarea;
   padding: 1rem;
   border-radius: 12px;
   margin: 1rem 0;
@@ -2764,7 +2881,7 @@ body {
     gap: 0.5rem;
     text-align: center;
   }
-  
+
   .progress-info span {
     font-size: 0.75rem;
   }
@@ -2795,7 +2912,7 @@ body {
 }
 
 .add-subject-btn:hover:not(:disabled) {
-  background: #9b87f5;
+  background: var(--cta-hover);
   transform: translateY(-1px);
 }
 
@@ -2871,7 +2988,7 @@ body {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .add-subject-buttons {
     flex-direction: column;
   }
@@ -2926,7 +3043,7 @@ body {
 }
 
 .enhanced-profile-card {
-  background: #ffffff;
+    background: #ffffff;
   border-radius: 1.5rem;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   overflow: hidden;
@@ -3209,11 +3326,11 @@ body {
   .profile-container {
     padding: 1.5rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .achievements-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -3224,94 +3341,94 @@ body {
   .profile-container {
     padding: 1rem;
   }
-  
+
   .profile-header-enhanced {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
     padding: 1.5rem;
   }
-  
+
   .profile-greeting h1 {
     font-size: 1.5rem;
   }
-  
+
   .profile-level-badge {
     align-self: center;
   }
-  
+
   .profile-hero {
     padding: 1.5rem;
   }
-  
+
   .profile-avatar-section {
     flex-direction: column;
     text-align: center;
     gap: 1.5rem;
   }
-  
+
   .avatar-image-enhanced {
     width: 100px;
     height: 100px;
   }
-  
+
   .avatar-badge {
     width: 28px;
     height: 28px;
     font-size: 0.875rem;
   }
-  
+
   .profile-name-enhanced {
     font-size: 1.75rem;
   }
-  
+
   .profile-meta {
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;
   }
-  
+
   .profile-stats-enhanced,
   .achievements-section,
   .enhanced-profile-form {
     padding: 1.5rem;
   }
-  
+
   .stats-title,
   .achievements-title,
   .form-title {
     font-size: 1.125rem;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
-  
+
   .stat-card-enhanced {
     padding: 1rem;
   }
-  
+
   .stat-icon-enhanced {
     font-size: 1.5rem;
   }
-  
+
   .stat-value-enhanced {
     font-size: 1.5rem;
   }
-  
+
   .achievements-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .achievement-card {
     padding: 0.75rem;
   }
-  
+
   .achievement-icon {
     font-size: 1.75rem;
     width: 40px;
@@ -3323,38 +3440,38 @@ body {
   .profile-container {
     padding: 0.5rem;
   }
-  
+
   .profile-header-enhanced {
     padding: 1rem;
     margin-bottom: 1rem;
   }
-  
+
   .profile-greeting h1 {
     font-size: 1.25rem;
   }
-  
+
   .profile-subtitle {
     font-size: 0.875rem;
   }
-  
+
   .profile-level-badge {
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
   }
-  
+
   .level-icon {
     font-size: 1.25rem;
   }
-  
+
   .profile-hero {
     padding: 1rem;
   }
-  
+
   .avatar-image-enhanced {
     width: 80px;
     height: 80px;
   }
-  
+
   .avatar-badge {
     width: 24px;
     height: 24px;
@@ -3362,78 +3479,78 @@ body {
     bottom: 4px;
     right: 4px;
   }
-  
+
   .profile-name-enhanced {
     font-size: 1.5rem;
   }
-  
+
   .profile-nickname {
     font-size: 1rem;
   }
-  
+
   .profile-bio {
     font-size: 0.875rem;
   }
-  
+
   .profile-meta {
     font-size: 0.8rem;
   }
-  
+
   .profile-stats-enhanced,
   .achievements-section,
   .enhanced-profile-form {
     padding: 1rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }
-  
+
   .stat-card-enhanced {
     padding: 0.75rem;
   }
-  
+
   .stat-icon-enhanced {
     font-size: 1.25rem;
   }
-  
+
   .stat-value-enhanced {
     font-size: 1.25rem;
   }
-  
+
   .stat-label-enhanced {
     font-size: 0.75rem;
   }
-  
+
   .achievement-card {
     flex-direction: column;
     text-align: center;
     padding: 1rem;
   }
-  
+
   .achievement-icon {
     font-size: 2rem;
     width: auto;
     margin-bottom: 0.5rem;
   }
-  
+
   .achievement-checkmark {
     top: 0.25rem;
     right: 0.25rem;
   }
-  
+
   .enhanced-profile-form .form-group {
     margin-bottom: 1rem;
   }
-  
+
   .enhanced-profile-form input,
   .enhanced-profile-form textarea,
   .enhanced-profile-form select {
     padding: 0.625rem;
     font-size: 0.875rem;
   }
-  
+
   .enhanced-save-btn {
     padding: 0.875rem 1.5rem;
     font-size: 0.875rem;
@@ -3445,39 +3562,39 @@ body {
   .profile-header-enhanced {
     padding: 0.75rem;
   }
-  
+
   .profile-greeting h1 {
     font-size: 1.125rem;
   }
-  
+
   .profile-level-badge {
     padding: 0.375rem 0.5rem;
     font-size: 0.75rem;
   }
-  
+
   .avatar-image-enhanced {
     width: 70px;
     height: 70px;
   }
-  
+
   .profile-name-enhanced {
     font-size: 1.25rem;
   }
-  
+
   .stats-title,
   .achievements-title,
   .form-title {
     font-size: 1rem;
   }
-  
+
   .achievement-card {
     padding: 0.75rem;
   }
-  
+
   .achievement-info h4 {
     font-size: 0.875rem;
   }
-  
+
   .achievement-desc {
     font-size: 0.75rem;
   }
@@ -3550,7 +3667,6 @@ body {
 
 .stat-label {
   font-size: 0.875rem;
-  color: #6b7280;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -3561,22 +3677,22 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 0.75rem;
   }
-  
+
   .daily-stat-card {
     padding: 1rem;
     gap: 0.75rem;
   }
-  
+
   .stat-icon {
     font-size: 1.5rem;
     min-width: 2.5rem;
     padding: 0.5rem;
   }
-  
+
   .stat-value {
     font-size: 1.5rem;
   }
-  
+
   .stat-label {
     font-size: 0.75rem;
   }
@@ -3724,12 +3840,12 @@ body {
   display: block;
 }
 
-.plan-checkbox input[type="checkbox"]:checked + .checkbox-custom {
+.plan-checkbox input[type="checkbox"]:checked+.checkbox-custom {
   background: #9170e6;
   border-color: #9170e6;
 }
 
-.plan-checkbox input[type="checkbox"]:checked + .checkbox-custom::after {
+.plan-checkbox input[type="checkbox"]:checked+.checkbox-custom::after {
   content: '✓';
   color: white;
   position: absolute;
@@ -4042,16 +4158,16 @@ body {
     margin: 1rem;
     width: calc(100% - 2rem);
   }
-  
+
   .plan-item {
     padding: 0.75rem;
     gap: 0.75rem;
   }
-  
+
   .plan-subject {
     font-size: 0.9rem;
   }
-  
+
   .plan-time {
     font-size: 0.8rem;
   }
@@ -4090,18 +4206,18 @@ body {
   .plan-header {
     margin-bottom: 0.75rem;
   }
-  
+
   .add-plan-btn {
     width: 28px;
     height: 28px;
     font-size: 1rem;
   }
-  
+
   .plan-item {
     padding: 0.5rem;
     gap: 0.5rem;
   }
-  
+
   .delete-plan-btn {
     font-size: 0.8rem;
   }
@@ -4198,37 +4314,37 @@ body {
     padding: 1.25rem 1.5rem 1rem;
     margin-top: 0;
   }
-  
+
   .footer-content {
     grid-template-columns: 1fr;
     gap: 1.25rem;
     text-align: center;
   }
-  
+
   .footer-section {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
-  
+
   .footer-links {
     align-items: center;
   }
-  
+
   .footer-links a:hover {
     padding-left: 0;
     transform: translateY(-1px);
   }
-  
+
   .footer-bottom {
     justify-content: center;
     padding-top: 1rem;
   }
-  
+
   .footer-title {
     font-size: 1.25rem;
   }
-  
+
   .footer-description {
     max-width: 350px;
     font-size: 0.85rem;
@@ -4240,29 +4356,29 @@ body {
     padding: 1rem 1rem 0.75rem;
     margin-top: 0;
   }
-  
+
   .footer-content {
     gap: 1rem;
   }
-  
+
   .footer-title {
     font-size: 1.15rem;
   }
-  
+
   .footer-description {
     font-size: 0.8rem;
     max-width: 280px;
   }
-  
+
   .footer-section h4 {
     font-size: 0.95rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .footer-links a {
     font-size: 0.8rem;
   }
-  
+
   .footer-bottom {
     padding-top: 0.75rem;
   }
@@ -4273,20 +4389,20 @@ body {
     padding: 0.875rem 0.75rem 0.625rem;
     margin-top: 0;
   }
-  
+
   .footer-title {
     font-size: 1.05rem;
   }
-  
+
   .footer-description {
     font-size: 0.75rem;
     max-width: 240px;
   }
-  
+
   .footer-section h4 {
     font-size: 0.9rem;
   }
-  
+
   .copyright p {
     font-size: 0.7rem;
   }
@@ -4323,6 +4439,7 @@ body {
     opacity: 0;
     transform: translateY(-30px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -4387,20 +4504,20 @@ body {
     padding: 1.5rem;
     margin: 1rem;
   }
-  
+
   .modal-title {
     font-size: 1.3rem;
   }
-  
+
   .modal-message {
     font-size: 0.9rem;
   }
-  
+
   .modal-buttons {
     flex-direction: column;
     gap: 0.75rem;
   }
-  
+
   .cancel-button,
   .confirm-button {
     width: 100%;
@@ -4452,6 +4569,7 @@ body {
     opacity: 0;
     transform: translateY(-30px) scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -4462,6 +4580,7 @@ body {
   0% {
     left: -100%;
   }
+
   100% {
     left: 100%;
   }
@@ -4487,9 +4606,11 @@ body {
   0% {
     transform: scale(0);
   }
+
   50% {
     transform: scale(1.2);
   }
+
   100% {
     transform: scale(1);
   }
@@ -4516,17 +4637,17 @@ body {
     margin: 1rem;
     border-radius: 1.25rem;
   }
-  
+
   .success-icon {
     width: 70px;
     height: 70px;
     font-size: 3rem;
   }
-  
+
   .success-title {
     font-size: 1.5rem;
   }
-  
+
   .success-message {
     font-size: 0.95rem;
   }
@@ -4537,17 +4658,17 @@ body {
     padding: 1.75rem;
     border-radius: 1rem;
   }
-  
+
   .success-icon {
     width: 60px;
     height: 60px;
     font-size: 2.5rem;
   }
-  
+
   .success-title {
     font-size: 1.3rem;
   }
-  
+
   .success-message {
     font-size: 0.9rem;
   }

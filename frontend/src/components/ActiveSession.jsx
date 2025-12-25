@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import StartPrompt from './StartPrompt';
 import Sidebar from './Sidebar';
 
-function ActiveSession() {
+function ActiveSession({ darkMode, setDarkMode }) {
 
   const navigate = useNavigate();
 
@@ -233,7 +233,13 @@ const [promptOpen, setPromptOpen] = useState(false);
         ☰
       </button>
       {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
-      <Sidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
+      <Sidebar
+  isOpen={isMobileMenuOpen}
+  onClose={closeMobileMenu}
+  darkMode={darkMode}
+  toggleDark={() => setDarkMode(prev => !prev)}
+/>
+
       <main className="dashboard-main">
         {/* Session Goal Card */}
         <div className="figma-session-goal-card">

@@ -3,8 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LogoutModal from './LogoutModal';
 // Import the logout function from your API file
 import { logout } from './services/authService'; 
+import { MdOutlineLightMode, MdOutlineDarkMode } from "react-icons/md";
 
-function Sidebar({ isOpen, onClose }) {
+function Sidebar({ isOpen, onClose, darkMode, toggleDark }) {
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -62,6 +63,12 @@ function Sidebar({ isOpen, onClose }) {
         <span className="logo-hindi">समय</span>
         <span className="logo-english">SYNC</span>
       </Link>
+
+   <button className='toggle-dark-mode'  onClick={toggleDark}>
+  {darkMode ? <MdOutlineLightMode /> : <MdOutlineDarkMode />}
+</button>
+
+
 
       <nav className="sidebar-nav">
         <Link 

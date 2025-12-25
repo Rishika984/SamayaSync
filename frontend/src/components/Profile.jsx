@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { getCurrentUser, updateUserProfile } from './services/authService';
 import Sidebar from './Sidebar';
 
-function Profile() {
+function Profile({ darkMode, setDarkMode }) {
   const [profileData, setProfileData] = useState({
     firstName: '',
     lastName: '',
@@ -200,7 +200,13 @@ function Profile() {
         ☰
       </button>
       {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
-      <Sidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
+      <Sidebar
+  isOpen={isMobileMenuOpen}
+  onClose={closeMobileMenu}
+  darkMode={darkMode}
+  toggleDark={() => setDarkMode(prev => !prev)}
+/>
+
       <main className="dashboard-main">
         <div className="profile-container">
           {/* Main Profile Card */}
