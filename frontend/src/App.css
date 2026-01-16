@@ -11,6 +11,7 @@
 
 :root {
   --white: #ffffff;
+  --black:#000;
   --primary: #6A6193;
 
   --head-title: #6A6193;
@@ -67,6 +68,8 @@
 }
 
 .dark {
+  --white: #000;
+   --black:#ffffff;
   --primary: #f3e8ff;
   --head-title: #f3e8ff;
   --subtitle: #c4b5fd;
@@ -3043,15 +3046,14 @@ body {
 }
 
 .enhanced-profile-card {
-    background: #ffffff;
+    background: var(--card-color);
   border-radius: 1.5rem;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
 
 .profile-hero {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  padding: 2.5rem;
+   padding: 2.5rem;
   border-bottom: 1px solid #e2e8f0;
 }
 
@@ -3094,13 +3096,13 @@ body {
 .profile-name-enhanced {
   font-size: 2rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--black);
   margin-bottom: 0.25rem;
 }
 
 .profile-nickname {
   font-size: 1.1rem;
-  color: #a78bfa;
+  color: #8264db;
   font-style: italic;
   margin-bottom: 0.75rem;
 }
@@ -3117,7 +3119,7 @@ body {
   gap: 2rem;
   font-size: 0.9rem;
   color: #64748b;
-}
+} 
 
 .profile-stats-enhanced {
   padding: 2rem 2.5rem;
@@ -3127,7 +3129,7 @@ body {
 .stats-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--subtitle);
   margin-bottom: 1.5rem;
 }
 
@@ -3149,7 +3151,7 @@ body {
 }
 
 .stat-card-enhanced.primary {
-  background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
+  background: linear-gradient(135deg, #fbfaff 0%, #dcd7ed 100%);
 }
 
 .stat-card-enhanced.secondary {

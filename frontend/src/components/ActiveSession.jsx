@@ -92,7 +92,7 @@ const [promptOpen, setPromptOpen] = useState(false);
 
     const completedSession = {
       subject: currentSubject,
-      duration: totalStudyTime || originalMinutes, // Use total study time for Pomodoro
+      duration: totalStudyTime || originalMinutes, 
       completedAt: new Date().toISOString(),
       date: new Date().toLocaleDateString(),
       goal: sessionGoal || 'No specific goal set',
@@ -325,6 +325,7 @@ const [promptOpen, setPromptOpen] = useState(false);
                     disabled={isActive}
                   >
                     <option value="">Choose a subject</option>
+                    
                     {subjects.map((subject, index) => (
                       <option key={index} value={subject}>{subject}</option>
                     ))}
