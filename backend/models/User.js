@@ -38,11 +38,13 @@ const userSchema = mongoose.Schema(
     nickName: {
       type: String,
       default: '',
+      maxlength: 30,
     },
 
     studyGoal: {
       type: String,
       default: '2 hours daily',
+      enum: ['30 minutes daily', '1 hour daily', '2 hours daily', '3 hours daily', '4+ hours daily'],
     },
 
     role: {
@@ -56,17 +58,57 @@ const userSchema = mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
-// hash password (skip Google users)
+// Virtual for study sessions
+userSchema.virtual('studySessions', {
+  ref: 'StudySession',
+  localField: '_id',
+  foreignField: 'userId',
+});
+
+// Virtual for study stats
+userSchema.virtual('studyStats', {
+  ref: 'StudyStats',
+  localField: '_id',
+  foreignField: '_id',
+  justOne: true,
+});
+
+// Virtual for study plans
+userSchema.virtual('studyPlans', {
+  ref: 'StudyPlan',
+  localField: '_id',
+  foreignField: 'userId',
+});
+
+// Virtual for achievements
+userSchema.virtual('achievements', {
+  ref: 'AchievementLog',
+  localField: '_id',
+  foreignField: 'userId',
+});
+
+// Virtual for streak history
+userSchema.virtual('streakHistory', {
+  ref: 'StreakHistory',
+  localField: '_id',
+  foreignField: 'userId',
+});
+
+// Hash password (skip Google users)
 userSchema.pre('save', async function (next) {
   if (!this.password || !this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// match password
+// Match password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
