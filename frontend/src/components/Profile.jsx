@@ -371,7 +371,7 @@ function Profile({ darkMode, setDarkMode }) {
         </div>
       </main>
 
-      {/* Success Popup */}
+      {/* Success Popup  */}
       {showSuccessPopup && (
         <div className="success-popup-overlay">
           <div className="success-popup">
