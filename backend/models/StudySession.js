@@ -8,6 +8,11 @@ const studySessionSchema = mongoose.Schema(
       required: true,
       index: true,
     },
+    subject: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     startTime: {
       type: Date,
       required: true,
@@ -20,6 +25,10 @@ const studySessionSchema = mongoose.Schema(
       type: Number,
       required: true,
       min: 0,
+    },
+    goal: {
+      type: String,
+      default: '',
     },
     studyDate: {
       type: Date,
@@ -37,7 +46,6 @@ const studySessionSchema = mongoose.Schema(
   }
 );
 
-// Index for faster queries
 studySessionSchema.index({ userId: 1, studyDate: -1 });
 
 module.exports = mongoose.model('StudySession', studySessionSchema);

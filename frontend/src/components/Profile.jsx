@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getCurrentUser, updateUserProfile } from './services/authService';
+import { getStudyStats } from './services/studyService';
 import Sidebar from './Sidebar';
 
 function Profile({ darkMode, setDarkMode }) {
@@ -9,7 +10,8 @@ function Profile({ darkMode, setDarkMode }) {
     nickName: '',
     email: '',
     joinDate: '',
-    studyGoal: '2 hours daily'
+    studyGoal: '2 hours daily',
+    totalDays: 0
   });
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -18,13 +20,11 @@ function Profile({ darkMode, setDarkMode }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   
-  const [stats] = useState({
+  const [stats, setStats] = useState({
     totalHours: 0,
     sessionsCompleted: 0,
     streakDays: 0,
-    averageDaily: 0,
-    longestSession: 0,
-    totalDays: 0
+    averageDaily: 0
   });
 
   const [achievements] = useState([
@@ -36,11 +36,13 @@ function Profile({ darkMode, setDarkMode }) {
     { id: 6, title: 'Night Owl', description: 'Study after 10 PM', icon: '🦉', unlocked: false }
   ]);
 
-  // Fetch user data from backend
+  // Fetch user data and stats from backend
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
+        
+        // Fetch user profile
         const userData = await getCurrentUser();
         
         // Split fullName into firstName and lastName
@@ -49,19 +51,18 @@ function Profile({ darkMode, setDarkMode }) {
         const lastName = nameParts.slice(1).join(' ') || '';
         
         // Format join date
-        const formattedJoinDate = new Date(userData.joinDate).toLocaleDateString('en-US', {
-          weekday: 'short',
+        const joinDateRaw = new Date(userData.createdAt || userData.joinDate || Date.now());
+        const formattedJoinDate = joinDateRaw.toLocaleDateString('en-US', {
+          month: 'short',
           day: '2-digit',
-          month: 'long',
           year: 'numeric'
         });
 
         // Calculate days since joining
-        const joinDate = new Date(userData.joinDate);
         const today = new Date();
-        const totalDays = Math.max(0, Math.ceil((today - joinDate) / (1000 * 60 * 60 * 24)));
+        const totalDays = Math.max(0, Math.ceil((today - joinDateRaw) / (1000 * 60 * 60 * 24)));
 
-        const updatedProfileData = {
+        setProfileData({
           firstName,
           lastName,
           nickName: userData.nickName || firstName || 'Learner',
@@ -69,19 +70,32 @@ function Profile({ darkMode, setDarkMode }) {
           joinDate: formattedJoinDate,
           studyGoal: userData.studyGoal || '2 hours daily',
           totalDays
-        };
+        });
 
-        setProfileData(updatedProfileData);
+        // Fetch study stats
+        try {
+          const statsData = await getStudyStats();
+          setStats({
+            totalHours: Math.round((statsData.totalMinutes / 60) * 10) / 10 || 0,
+            sessionsCompleted: statsData.totalSessions || 0,
+            streakDays: statsData.currentStreak || 0,
+            averageDaily: statsData.averageSessionMinutes ? Math.round((statsData.averageSessionMinutes / 60) * 10) / 10 : 0
+          });
+        } catch (statsError) {
+          console.log('Stats not available yet:', statsError);
+          // Keep default stats (all zeros)
+        }
+        
         setError('');
       } catch (err) {
-        console.error('Error fetching user data:', err);
+        console.error('Error fetching data:', err);
         setError('Failed to load profile data. Please login again.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
+    fetchData();
   }, []);
 
   const handleChange = (e) => {
@@ -96,19 +110,13 @@ function Profile({ darkMode, setDarkMode }) {
     setSaving(true);
 
     try {
-      // Save only editable fields to backend
       await updateUserProfile({
         nickName: profileData.nickName,
         studyGoal: profileData.studyGoal
       });
       
-      // Show success popup
       setShowSuccessPopup(true);
-      
-      // Auto-hide popup after 3 seconds
-      setTimeout(() => {
-        setShowSuccessPopup(false);
-      }, 3000);
+      setTimeout(() => setShowSuccessPopup(false), 3000);
     } catch (err) {
       console.error('Error updating profile:', err);
       alert('Failed to update profile. Please try again.');
@@ -128,7 +136,12 @@ function Profile({ darkMode, setDarkMode }) {
   if (loading) {
     return (
       <div className="dashboard-layout">
-        <Sidebar />
+        <Sidebar 
+          isOpen={isMobileMenuOpen} 
+          onClose={closeMobileMenu} 
+          darkMode={darkMode} 
+          toggleDark={() => setDarkMode(prev => !prev)} 
+        />
         <main className="dashboard-main">
           <div className="profile-container">
             <div className="loading-state" style={{
@@ -160,7 +173,12 @@ function Profile({ darkMode, setDarkMode }) {
   if (error) {
     return (
       <div className="dashboard-layout">
-        <Sidebar />
+        <Sidebar 
+          isOpen={isMobileMenuOpen} 
+          onClose={closeMobileMenu} 
+          darkMode={darkMode} 
+          toggleDark={() => setDarkMode(prev => !prev)} 
+        />
         <main className="dashboard-main">
           <div className="profile-container">
             <div className="error-state" style={{
@@ -201,11 +219,11 @@ function Profile({ darkMode, setDarkMode }) {
       </button>
       {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
       <Sidebar
-  isOpen={isMobileMenuOpen}
-  onClose={closeMobileMenu}
-  darkMode={darkMode}
-  toggleDark={() => setDarkMode(prev => !prev)}
-/>
+        isOpen={isMobileMenuOpen}
+        onClose={closeMobileMenu}
+        darkMode={darkMode}
+        toggleDark={() => setDarkMode(prev => !prev)}
+      />
 
       <main className="dashboard-main">
         <div className="profile-container">
@@ -227,10 +245,10 @@ function Profile({ darkMode, setDarkMode }) {
                       'Student'
                     }
                   </h2>
-                  <p className="profile-nickname">{profileData.email || 'Learner'}</p>
+                  <p className="profile-nickname">{profileData.email}</p>
                   <div className="profile-meta">
                     <span className="join-date">📅 Member since {profileData.joinDate}</span>
-                    <span className="days-active">⏱️ {profileData.totalDays || 0} days on platform</span>
+                    <span className="days-active">⏱️ {profileData.totalDays} days on platform</span>
                   </div>
                 </div>
               </div>
@@ -371,7 +389,7 @@ function Profile({ darkMode, setDarkMode }) {
         </div>
       </main>
 
-      {/* Success Popup  */}
+      {/* Success Popup */}
       {showSuccessPopup && (
         <div className="success-popup-overlay">
           <div className="success-popup">
@@ -385,4 +403,4 @@ function Profile({ darkMode, setDarkMode }) {
   );
 }
 
-export default Profile; 
+export default Profile;

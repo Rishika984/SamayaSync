@@ -34,7 +34,6 @@ const studyPlanSchema = mongoose.Schema(
   }
 );
 
-// Index for faster queries
 studyPlanSchema.index({ userId: 1, date: -1 });
 
 module.exports = mongoose.model('StudyPlan', studyPlanSchema);

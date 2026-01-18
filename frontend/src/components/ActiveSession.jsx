@@ -1,32 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getCurrentUser } from './services/authService';
-import { useLocation } from 'react-router-dom';
+import { createStudySession } from './services/studyService';
 import StartPrompt from './StartPrompt';
 import Sidebar from './Sidebar';
 
 function ActiveSession({ darkMode, setDarkMode }) {
-
   const navigate = useNavigate();
-
-
- useEffect(() => {
-  const checkAuth = async () => {
-    try {
-      await getCurrentUser(); // checks cookie
-    } catch {
-      navigate('/welcome', { replace: true });
-    }
-  };
-
-  checkAuth();
-}, [navigate]);
-
-
   const location = useLocation();
- const showOnboard = location?.state?.showOnboard;
-const [promptOpen, setPromptOpen] = useState(false);
-
+  const showOnboard = location?.state?.showOnboard;
+  const [promptOpen, setPromptOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const [minutes, setMinutes] = useState(25);
@@ -35,28 +18,38 @@ const [promptOpen, setPromptOpen] = useState(false);
   const [currentSubject, setCurrentSubject] = useState('');
   const [sessionGoal, setSessionGoal] = useState('');
   const [originalMinutes, setOriginalMinutes] = useState(25);
+  const [sessionStartTime, setSessionStartTime] = useState(null);
   
   // Pomodoro states
   const [isBreakTime, setIsBreakTime] = useState(false);
-  const [totalStudyTime, setTotalStudyTime] = useState(0); // Total minutes to study
-  const [studiedTime, setStudiedTime] = useState(0); // Minutes already studied
-  const [currentCycle, setCurrentCycle] = useState(1); // Current study cycle
-  const [sessionPhase, setSessionPhase] = useState('study'); // 'study' or 'break'
+  const [totalStudyTime, setTotalStudyTime] = useState(0);
+  const [studiedTime, setStudiedTime] = useState(0);
+  const [currentCycle, setCurrentCycle] = useState(1);
+  const [sessionPhase, setSessionPhase] = useState('study');
 
   // Subject management states
   const [subjects, setSubjects] = useState(['Mathematics', 'Programming', 'Science', 'English', 'History']);
   const [showAddSubject, setShowAddSubject] = useState(false);
   const [newSubject, setNewSubject] = useState('');
 
- useEffect(() => {
-  const alreadyShown = sessionStorage.getItem('startPromptShown');
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await getCurrentUser();
+      } catch {
+        navigate('/welcome', { replace: true });
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
-  if (showOnboard && !alreadyShown) {
-    setPromptOpen(true);
-    sessionStorage.setItem('startPromptShown', 'true');
-  }
-}, [showOnboard]);
-
+  useEffect(() => {
+    const alreadyShown = sessionStorage.getItem('startPromptShown');
+    if (showOnboard && !alreadyShown) {
+      setPromptOpen(true);
+      sessionStorage.setItem('startPromptShown', 'true');
+    }
+  }, [showOnboard]);
 
   const addNewSubject = () => {
     if (newSubject.trim() && !subjects.includes(newSubject.trim())) {
@@ -78,37 +71,30 @@ const [promptOpen, setPromptOpen] = useState(false);
     setShowAddSubject(false);
   };
 
-  // Function to generate random colors for session headers
-  const getRandomColor = () => {
-    const colors = ['#FFA07A', '#87CEEB', '#FF9999', '#90EE90', '#DDA0DD', '#F0E68C', '#FFB6C1', '#98FB98'];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
-
-  const saveCompletedSession = useCallback(() => {
-    if (!currentSubject) {
-      alert('Please select a subject before starting the session!');
+  const saveCompletedSession = useCallback(async () => {
+    if (!currentSubject || !sessionStartTime) {
       return;
     }
 
-    const completedSession = {
-      subject: currentSubject,
-      duration: totalStudyTime || originalMinutes, 
-      completedAt: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-      goal: sessionGoal || 'No specific goal set',
-      color: getRandomColor(),
-      timestamp: Date.now()
-    };
+    try {
+      const endTime = new Date();
+      const actualDuration = totalStudyTime || originalMinutes;
 
-    // Get existing sessions from localStorage
-    const existingSessions = JSON.parse(localStorage.getItem('completedSessions') || '[]');
-    
-    // Add new session
-    const updatedSessions = [...existingSessions, completedSession];
-    
-    // Save to localStorage
-    localStorage.setItem('completedSessions', JSON.stringify(updatedSessions));
-  }, [currentSubject, sessionGoal, totalStudyTime, originalMinutes]);
+      // Save to backend
+      await createStudySession({
+        subject: currentSubject,
+        startTime: sessionStartTime,
+        endTime: endTime,
+        durationMinutes: actualDuration,
+        goal: sessionGoal || 'No specific goal set',
+      });
+
+      console.log('Session saved to backend successfully');
+    } catch (error) {
+      console.error('Error saving session to backend:', error);
+      alert('Failed to save session. Please try again.');
+    }
+  }, [currentSubject, sessionGoal, totalStudyTime, originalMinutes, sessionStartTime]);
 
   useEffect(() => {
     let interval = null;
@@ -123,30 +109,24 @@ const [promptOpen, setPromptOpen] = useState(false);
       }, 1000);
     } else if (minutes === 0 && seconds === 0 && isActive) {
       if (sessionPhase === 'study') {
-        // Study phase completed
         const studyMinutes = isBreakTime ? 50 : (currentCycle === 1 ? 60 : 50);
         setStudiedTime(prev => prev + studyMinutes);
         
-        // Check if total study time is completed
         if (studiedTime + studyMinutes >= totalStudyTime) {
-          // Session completely finished
           setIsActive(false);
           saveCompletedSession();
           alert('🎉 Congratulations! You have completed your entire study session! Check your Session Log to see your progress.');
           resetToInitialState();
         } else {
-          // Start break
           setSessionPhase('break');
           setMinutes(10);
           setSeconds(0);
           alert('⏰ Study phase completed! Time for a 10-minute break. Relax and recharge! 🌟');
         }
       } else {
-        // Break phase completed
         setSessionPhase('study');
         setCurrentCycle(prev => prev + 1);
         
-        // Calculate remaining study time and set next study duration
         const remainingTime = totalStudyTime - studiedTime;
         const nextStudyDuration = Math.min(50, remainingTime);
         
@@ -167,6 +147,7 @@ const [promptOpen, setPromptOpen] = useState(false);
     setMinutes(25);
     setOriginalMinutes(25);
     setSeconds(0);
+    setSessionStartTime(null);
   };
 
   const toggleTimer = () => {
@@ -176,15 +157,13 @@ const [promptOpen, setPromptOpen] = useState(false);
     }
     
     if (!isActive && sessionPhase === 'study' && studiedTime === 0) {
-      // Starting a new session - set up Pomodoro structure
       setTotalStudyTime(originalMinutes);
+      setSessionStartTime(new Date());
       
       if (originalMinutes >= 60) {
-        // For 1+ hour sessions, start with 60 minutes, then use breaks
         setMinutes(60);
         setIsBreakTime(true);
       } else {
-        // For sessions less than 60 minutes, use the set time directly
         setMinutes(originalMinutes);
         setIsBreakTime(false);
       }
@@ -225,7 +204,6 @@ const [promptOpen, setPromptOpen] = useState(false);
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
-  
 
   return (
     <div className="dashboard-layout">
@@ -234,11 +212,11 @@ const [promptOpen, setPromptOpen] = useState(false);
       </button>
       {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
       <Sidebar
-  isOpen={isMobileMenuOpen}
-  onClose={closeMobileMenu}
-  darkMode={darkMode}
-  toggleDark={() => setDarkMode(prev => !prev)}
-/>
+        isOpen={isMobileMenuOpen}
+        onClose={closeMobileMenu}
+        darkMode={darkMode}
+        toggleDark={() => setDarkMode(prev => !prev)}
+      />
 
       <main className="dashboard-main">
         {/* Session Goal Card */}
@@ -325,7 +303,6 @@ const [promptOpen, setPromptOpen] = useState(false);
                     disabled={isActive}
                   >
                     <option value="">Choose a subject</option>
-                    
                     {subjects.map((subject, index) => (
                       <option key={index} value={subject}>{subject}</option>
                     ))}
@@ -385,11 +362,10 @@ const [promptOpen, setPromptOpen] = useState(false);
       </main>
      
       <StartPrompt
-  open={promptOpen}
-  onConfirm={() => setPromptOpen(false)}
-  onCancel={() => setPromptOpen(false)}
-/>
-
+        open={promptOpen}
+        onConfirm={() => setPromptOpen(false)}
+        onCancel={() => setPromptOpen(false)}
+      />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { getStudyStats, getWeeklyProgress, getTodaysPlans, createStudyPlan, togglePlanCompletion, deleteStudyPlan } from './services/studyService';
 import StartPrompt from './StartPrompt';
 import Sidebar from './Sidebar';
 import StatCard from './StatCard';
@@ -23,136 +24,64 @@ function Dashboard({ darkMode, setDarkMode }) {
     streakDays: 0,
     averageSessionTime: '0 min'
   });
+  const [progressData, setProgressData] = useState([
+    { day: 'Mon', hours: 0 },
+    { day: 'Tue', hours: 0 },
+    { day: 'Wed', hours: 0 },
+    { day: 'Thu', hours: 0 },
+    { day: 'Fri', hours: 0 },
+    { day: 'Sat', hours: 0 },
+    { day: 'Sun', hours: 0 }
+  ]);
 
-  const loadTodaysPlans = useCallback(() => {
-    const today = new Date().toDateString();
-    const savedPlans = JSON.parse(localStorage.getItem('dailyPlans') || '{}');
-    const plans = savedPlans[today] || [];
-    
-    // Sort plans by time (convert to 24-hour format for sorting)
-    const sortedPlans = plans.sort((a, b) => {
-      const timeA = convertTo24Hour(a.time);
-      const timeB = convertTo24Hour(b.time);
-      return timeA.localeCompare(timeB);
-    });
-    
-    setTodaysPlan(sortedPlans);
+  const loadTodaysPlans = useCallback(async () => {
+    try {
+      const plans = await getTodaysPlans();
+      setTodaysPlan(plans);
+    } catch (error) {
+      console.error('Error loading plans:', error);
+    }
   }, []);
 
-  // Helper function to convert time to 24-hour format for sorting
-  const convertTo24Hour = (timeStr) => {
-    try {
-      const time = timeStr.toLowerCase().trim();
-      let [timePart, period] = time.split(/\s+/);
-      let [hours, minutes] = timePart.split(':');
-      
-      hours = parseInt(hours);
-      minutes = minutes ? parseInt(minutes) : 0;
-      
-      if (period) {
-        if (period.includes('pm') && hours !== 12) hours += 12;
-        if (period.includes('am') && hours === 12) hours = 0;
-      }
-      
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-    } catch (e) {
-      return timeStr; // Return original if parsing fails
-    }
-  };
-
-  // Add a new plan
-  const addPlan = () => {
+  const addPlan = async () => {
     if (!newPlan.subject.trim() || !newPlan.expectedDuration) return;
     
-    const today = new Date().toDateString();
-    const savedPlans = JSON.parse(localStorage.getItem('dailyPlans') || '{}');
-    
-    const planToAdd = {
-      id: Date.now(),
-      subject: newPlan.subject.trim(),
-      expectedDuration: parseInt(newPlan.expectedDuration),
-      completed: false,
-      actualDuration: 0,
-      createdAt: new Date().toISOString()
-    };
-    
-    if (!savedPlans[today]) {
-      savedPlans[today] = [];
-    }
-    savedPlans[today].push(planToAdd);
-    
-    localStorage.setItem('dailyPlans', JSON.stringify(savedPlans));
-    setTodaysPlan(savedPlans[today]);
-    
-    // Reset form
-    setNewPlan({ subject: '', expectedDuration: 60 });
-    setPlanFormOpen(false);
-  };
-
-  // Delete a plan
-  const deletePlan = (planId) => {
-    const today = new Date().toDateString();
-    const savedPlans = JSON.parse(localStorage.getItem('dailyPlans') || '{}');
-    
-    if (savedPlans[today]) {
-      savedPlans[today] = savedPlans[today].filter(plan => plan.id !== planId);
-      localStorage.setItem('dailyPlans', JSON.stringify(savedPlans));
-      setTodaysPlan(savedPlans[today]);
-    }
-  };
-
-  // Toggle plan completion
-  const togglePlanComplete = (planId) => {
-    const today = new Date().toDateString();
-    const savedPlans = JSON.parse(localStorage.getItem('dailyPlans') || '{}');
-    
-    if (savedPlans[today]) {
-      savedPlans[today] = savedPlans[today].map(plan => 
-        plan.id === planId ? { ...plan, completed: !plan.completed } : plan
-      );
-      localStorage.setItem('dailyPlans', JSON.stringify(savedPlans));
-      setTodaysPlan(savedPlans[today]);
-    }
-  };
-
-
-
-  // Calculate actual study time for a plan
-  const calculateActualStudyTime = (planSubject) => {
-    const completedSessions = JSON.parse(localStorage.getItem('completedSessions') || '[]');
-    const today = new Date().toDateString();
-    
-    return completedSessions
-      .filter(session => {
-        const sessionDate = new Date(session.date).toDateString();
-        return sessionDate === today && session.subject.toLowerCase() === planSubject.toLowerCase();
-      })
-      .reduce((total, session) => total + session.duration, 0);
-  };
-
-  // Update plan progress based on completed sessions
-  const updatePlanProgress = useCallback(() => {
-    const today = new Date().toDateString();
-    const savedPlans = JSON.parse(localStorage.getItem('dailyPlans') || '{}');
-    
-    if (savedPlans[today]) {
-      savedPlans[today] = savedPlans[today].map(plan => {
-        const actualDuration = calculateActualStudyTime(plan.subject);
-        const isCompleted = actualDuration >= plan.expectedDuration;
-        
-        return {
-          ...plan,
-          actualDuration,
-          completed: isCompleted
-        };
+    try {
+      await createStudyPlan({
+        title: newPlan.subject.trim(),
+        targetMinutes: parseInt(newPlan.expectedDuration),
+        date: new Date(),
       });
       
-      localStorage.setItem('dailyPlans', JSON.stringify(savedPlans));
-      setTodaysPlan(savedPlans[today]);
+      setNewPlan({ subject: '', expectedDuration: 60 });
+      setPlanFormOpen(false);
+      loadTodaysPlans();
+    } catch (error) {
+      console.error('Error adding plan:', error);
+      alert('Failed to add plan. Please try again.');
     }
-  }, []);
+  };
 
-  // Format duration for display
+  const deletePlan = async (planId) => {
+    try {
+      await deleteStudyPlan(planId);
+      loadTodaysPlans();
+    } catch (error) {
+      console.error('Error deleting plan:', error);
+      alert('Failed to delete plan. Please try again.');
+    }
+  };
+
+  const togglePlanComplete = async (planId) => {
+    try {
+      await togglePlanCompletion(planId);
+      loadTodaysPlans();
+    } catch (error) {
+      console.error('Error toggling plan:', error);
+      alert('Failed to update plan. Please try again.');
+    }
+  };
+
   const formatDuration = (minutes) => {
     if (minutes >= 60) {
       const hours = Math.floor(minutes / 60);
@@ -167,183 +96,79 @@ function Dashboard({ darkMode, setDarkMode }) {
     }
   };
 
-  // Get completion percentage for a plan
   const getCompletionPercentage = (actualDuration, expectedDuration) => {
     return Math.min(100, Math.round((actualDuration / expectedDuration) * 100));
   };
 
-  // Start study session from plan
   const startSessionFromPlan = (planItem) => {
-    // Navigate to ActiveSession with pre-filled subject
     navigate('/active-session', { 
       state: { 
-        prefilledSubject: planItem.subject,
+        prefilledSubject: planItem.title,
         fromPlan: true,
-        planId: planItem.id
+        planId: planItem._id
       } 
     });
   };
 
-  const calculateWeeklyProgress = useCallback(() => {
-    const completedSessions = JSON.parse(localStorage.getItem('completedSessions') || '[]');
-    
-    // Get current week dates (Monday to Sunday)
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Calculate offset to Monday
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + mondayOffset);
-    
-    // Initialize weekly data
-    const weeklyData = [
-      { day: 'Mon', hours: 0 },
-      { day: 'Tue', hours: 0 },
-      { day: 'Wed', hours: 0 },
-      { day: 'Thu', hours: 0 },
-      { day: 'Fri', hours: 0 },
-      { day: 'Sat', hours: 0 },
-      { day: 'Sun', hours: 0 }
-    ];
-    
-    // Calculate hours for each day of the current week
-    completedSessions.forEach(session => {
-      const sessionDate = new Date(session.completedAt);
-      const sessionDay = sessionDate.getDay();
-      
-      // Check if session is within current week
-      const weekStart = new Date(monday);
-      const weekEnd = new Date(monday);
-      weekEnd.setDate(monday.getDate() + 6);
-      
-      if (sessionDate >= weekStart && sessionDate <= weekEnd) {
-        // Convert day index (0=Sunday, 1=Monday) to our array index (0=Monday, 6=Sunday)
-        const dayIndex = sessionDay === 0 ? 6 : sessionDay - 1;
-        const hours = session.duration / 60; // Convert minutes to hours
-        weeklyData[dayIndex].hours += hours;
-      }
-    });
-    
-    // Round hours to 1 decimal place
-    weeklyData.forEach(day => {
-      day.hours = Math.round(day.hours * 10) / 10;
-    });
-    
-    setProgressData(weeklyData);
-  }, []);
-
-  const calculateStreakDays = useCallback((sessions) => {
-    if (sessions.length === 0) return 0;
-    
-    // Group sessions by date
-    const sessionsByDate = {};
-    sessions.forEach(session => {
-      const date = new Date(session.completedAt).toDateString();
-      if (!sessionsByDate[date]) {
-        sessionsByDate[date] = [];
-      }
-      sessionsByDate[date].push(session);
-    });
-    
-    // Get unique dates and sort them
-    const dates = Object.keys(sessionsByDate).sort((a, b) => new Date(b) - new Date(a));
-    
-    if (dates.length === 0) return 0;
-    
-    // Check for consecutive days starting from today
-    let streak = 0;
-    const today = new Date();
-    
-    for (let i = 0; i < dates.length; i++) {
-      const currentDate = new Date(dates[i]);
-      const expectedDate = new Date(today);
-      expectedDate.setDate(today.getDate() - i);
-      
-      if (currentDate.toDateString() === expectedDate.toDateString()) {
-        streak++;
-      } else {
-        break;
-      }
+  const calculateWeeklyProgress = useCallback(async () => {
+    try {
+      const weeklyData = await getWeeklyProgress();
+      setProgressData(weeklyData);
+    } catch (error) {
+      console.error('Error loading weekly progress:', error);
     }
-    
-    return streak;
   }, []);
 
-  const calculateStats = useCallback(() => {
-    const completedSessions = JSON.parse(localStorage.getItem('completedSessions') || '[]');
-    const today = new Date().toDateString();
-    
-    // Get today's sessions
-    const todaySessions = completedSessions.filter(session => 
-      new Date(session.completedAt).toDateString() === today
-    );
-    
-    // Calculate total study hours for today
-    const totalMinutesToday = todaySessions.reduce((total, session) => {
-      return total + session.duration;
-    }, 0);
-    
-    const hours = Math.floor(totalMinutesToday / 60);
-    const minutes = totalMinutesToday % 60;
-    const totalStudyHours = hours > 0 ? 
-      (minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`) : 
-      (minutes > 0 ? `${minutes}m` : '0h');
-    
-    // Sessions completed today
-    const sessionsCompleted = todaySessions.length;
-    
-    // Calculate average session time for today
-    const averageMinutes = sessionsCompleted > 0 ? Math.round(totalMinutesToday / sessionsCompleted) : 0;
-    const averageSessionTime = averageMinutes > 0 ? `${averageMinutes} min` : '0 min';
-    
-    // Calculate streak days
-    const streakDays = calculateStreakDays(completedSessions);
-    
-    setStats({
-      totalStudyHours,
-      sessionsCompleted,
-      streakDays,
-      averageSessionTime
-    });
-    
-    // Update weekly progress chart
-    calculateWeeklyProgress();
-  }, [calculateStreakDays, calculateWeeklyProgress]);
+  const calculateStats = useCallback(async () => {
+    try {
+      const statsData = await getStudyStats();
+      
+      const totalMinutes = statsData.totalMinutes || 0;
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      
+      // Fixed formatting logic
+      let totalStudyHours;
+      if (hours > 0 && minutes > 0) {
+        totalStudyHours = `${hours}h ${minutes}m`;
+      } else if (hours > 0) {
+        totalStudyHours = `${hours}h`;
+      } else if (minutes > 0) {
+        totalStudyHours = `${minutes}m`;
+      } else {
+        totalStudyHours = '0m';
+      }
+      
+      const sessionsCompleted = statsData.totalSessions || 0;
+      const averageMinutes = statsData.averageSessionMinutes || 0;
+      const averageSessionTime = averageMinutes > 0 ? `${averageMinutes} min` : '0 min';
+      const streakDays = statsData.currentStreak || 0;
+      
+      setStats({
+        totalStudyHours,
+        sessionsCompleted,
+        streakDays,
+        averageSessionTime
+      });
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  }, []);
 
   useEffect(() => {
     if (showOnboard) setPromptOpen(true);
     loadTodaysPlans();
     calculateStats();
-    updatePlanProgress();
+    calculateWeeklyProgress();
 
-    // Listen for storage changes to update stats when sessions are completed
-    const handleStorageChange = (e) => {
-      if (e.key === 'completedSessions') {
-        calculateStats();
-        calculateWeeklyProgress();
-        updatePlanProgress(); // Update plan progress when new sessions are completed
-      }
-    };
+    const interval = setInterval(() => {
+      calculateStats();
+      calculateWeeklyProgress();
+      loadTodaysPlans();
+    }, 30000);
 
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Also check for changes periodically in case of same-tab updates
-    const interval = setInterval(calculateStats, 30000); // Check every 30 seconds
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
-  }, [showOnboard, calculateStats, calculateWeeklyProgress, loadTodaysPlans, updatePlanProgress]);
-
-  const [progressData, setProgressData] = useState([
-    { day: 'Mon', hours: 0 },
-    { day: 'Tue', hours: 0 },
-    { day: 'Wed', hours: 0 },
-    { day: 'Thu', hours: 0 },
-    { day: 'Fri', hours: 0 },
-    { day: 'Sat', hours: 0 },
-    { day: 'Sun', hours: 0 }
-  ]);
+    return () => clearInterval(interval);
+  }, [showOnboard, calculateStats, calculateWeeklyProgress, loadTodaysPlans]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -360,11 +185,11 @@ function Dashboard({ darkMode, setDarkMode }) {
       </button>
       {isMobileMenuOpen && <div className="sidebar-overlay active" onClick={closeMobileMenu}></div>}
       <Sidebar
-  isOpen={isMobileMenuOpen}
-  onClose={closeMobileMenu}
-  darkMode={darkMode}
-  toggleDark={() => setDarkMode(prev => !prev)}
-/>
+        isOpen={isMobileMenuOpen}
+        onClose={closeMobileMenu}
+        darkMode={darkMode}
+        toggleDark={() => setDarkMode(prev => !prev)}
+      />
 
       <main className="dashboard-main">
         <div className="dashboard-stats">
@@ -399,7 +224,6 @@ function Dashboard({ darkMode, setDarkMode }) {
                 <BarChart 
                   data={progressData}
                   margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
-                  
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis 
@@ -411,7 +235,6 @@ function Dashboard({ darkMode, setDarkMode }) {
                   />
                   <YAxis stroke="#64748b" fontSize={12} />
                   <Tooltip 
-                  //  cursor={{ fill: '#080809ff', opacity: 0.5 }}
                     contentStyle={{ 
                       background: '#fff', 
                       border: '1px solid #e0e0e0',
@@ -419,7 +242,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                       fontSize: '12px'
                     }} 
                   />
-                  <Bar dataKey="hours" fill="#a78bfa" radius={[8, 8, 0, 0]}  />
+                  <Bar dataKey="hours" fill="#a78bfa" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -469,29 +292,29 @@ function Dashboard({ darkMode, setDarkMode }) {
                 </div>
               ) : (
                 todaysPlan.map((item) => (
-                  <div key={item.id} className={`plan-item ${item.completed ? 'completed' : ''}`}>
+                  <div key={item._id} className={`plan-item ${item.completed ? 'completed' : ''}`}>
                     <div className="plan-checkbox">
                       <input
                         type="checkbox"
                         checked={item.completed}
-                        onChange={() => togglePlanComplete(item.id)}
-                        id={`plan-${item.id}`}
+                        onChange={() => togglePlanComplete(item._id)}
+                        id={`plan-${item._id}`}
                       />
-                      <label htmlFor={`plan-${item.id}`} className="checkbox-custom"></label>
+                      <label htmlFor={`plan-${item._id}`} className="checkbox-custom"></label>
                     </div>
                     <div className="plan-info">
-                      <div className="plan-subject">{item.subject}</div>
+                      <div className="plan-subject">{item.title}</div>
                       <div className="plan-progress-section">
                         <div className="plan-progress-bar">
                           <div 
                             className="plan-progress-fill"
                             style={{ 
-                              width: `${getCompletionPercentage(item.actualDuration || 0, item.expectedDuration)}%`
+                              width: `${getCompletionPercentage(0, item.targetMinutes)}%`
                             }}
                           ></div>
                         </div>
                         <div className="plan-progress-text">
-                          {formatDuration(item.actualDuration || 0)} / {formatDuration(item.expectedDuration)}
+                          {formatDuration(0)} / {formatDuration(item.targetMinutes)}
                           {item.completed && <span className="plan-success"> ✅</span>}
                         </div>
                       </div>
@@ -507,7 +330,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                       </button>
                       <button 
                         className="delete-plan-btn"
-                        onClick={() => deletePlan(item.id)}
+                        onClick={() => deletePlan(item._id)}
                         title="Delete plan"
                       >
                         🗑️
@@ -520,13 +343,13 @@ function Dashboard({ darkMode, setDarkMode }) {
           </div>
         </div>
       </main>
+      
       <StartPrompt 
         open={promptOpen} 
         onConfirm={() => setPromptOpen(false)} 
         onCancel={() => setPromptOpen(false)} 
       />
 
-      {/* Plan Form Modal */}
       {planFormOpen && (
         <div className="plan-modal-overlay" onClick={() => setPlanFormOpen(false)}>
           <div className="plan-modal" onClick={(e) => e.stopPropagation()}>
