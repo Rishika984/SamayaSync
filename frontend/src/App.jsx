@@ -4,6 +4,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Welcome from "./pages/Welcome";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
+import ForgetPassword from "./pages/ForgetPassword";
 import Dashboard from "./components/Dashboard";
 import ActiveSession from "./components/ActiveSession";
 import SessionLog from "./components/SessionLog";
@@ -53,6 +54,7 @@ function App() {
       <Route path="/welcome" element={<Welcome />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
+       <Route path="/forgot-password" element={<ForgetPassword />} />
 
       <Route
         path="/dashboard"

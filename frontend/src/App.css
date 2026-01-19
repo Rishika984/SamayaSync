@@ -149,6 +149,11 @@ body {
   color: var(--primary);
 }
 
+.logo-image {
+  width: 45px;
+  height: 45px;
+}
+
 .nav {
   display: flex;
   align-items: center;
@@ -1014,7 +1019,7 @@ body {
 .sidebar {
   width: 260px;
   background: var(--side-gradient-bg);
-  padding: 2rem 1.5rem;
+  padding: 2.1rem 1rem;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -1030,15 +1035,15 @@ body {
   font-weight: 700;
   gap: 0.25rem;
   text-decoration: none;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 }
 .toggle-dark-mode{
   background: none;
   border: none;
   cursor: pointer;
   position: absolute;
-  right: 15px;
-  top: 30px;
+  right: 5px;
+  top: 2px;
 
   height: 2.5rem;
   width: 2.5rem;
@@ -1050,7 +1055,7 @@ body {
   font-size: 1.4rem;
   border-radius: 8px;
   color: var(--primary);
-  transition: box-shadow 0.4s ease-in-out;
+  transition: box-shadow 0.4s ease-in-out; 
 
 }
 

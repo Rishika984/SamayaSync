@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { login } from './services/authService';
 import loginImg from "./Images/login.png";
 import group7 from "./Images/Group 7.png";
+import Logo  from './Images/logo.png';
 
 function Login() {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ function Login() {
     <div className="auth-page">
       <div className="auth-left">
         <Link to="/" className="auth-logo">
+        <img src={Logo} className="logo-image " alt="समय SYNC" />
           <span className="logo-hindi">समय</span>
           <span className="logo-english">SYNC</span>
         </Link>

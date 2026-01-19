@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LogoutModal from './LogoutModal';
+import Logo  from './Images/logo.png';
 // Import the logout function from your API file
 import { logout } from './services/authService'; 
 import { MdOutlineLightMode, MdOutlineDarkMode } from "react-icons/md";
@@ -60,6 +61,7 @@ function Sidebar({ isOpen, onClose, darkMode, toggleDark }) {
   return (
     <div className={`sidebar ${isOpen ? 'mobile-open' : ''}`}>
       <Link to="/" className="sidebar-logo">
+      <img src={Logo} className="logo-image " alt="समय SYNC" />
         <span className="logo-hindi">समय</span>
         <span className="logo-english">SYNC</span>
       </Link>

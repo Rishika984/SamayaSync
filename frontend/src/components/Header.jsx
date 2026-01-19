@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Logo  from './Images/logo.png';
 
 function Header() {
   return (
     <header className="header">
       <div className="header-container">
         <Link to="/" className="logo" style={{ textDecoration: 'none' }}>
+        <img src={Logo} className="logo-image " alt="" />
           <span className="logo-hindi">समय</span>
           <span className="logo-english">SYNC</span>
         </Link>
