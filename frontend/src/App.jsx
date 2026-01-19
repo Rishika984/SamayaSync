@@ -4,19 +4,20 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Welcome from "./pages/Welcome";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
-import ForgetPassword from "./pages/ForgetPassword";
+import ForgetPassword from "./ForgetPassword";
+import ResetPassword from "./ResetPassword"; // ← ADD THIS IMPORT
 import Dashboard from "./components/Dashboard";
 import ActiveSession from "./components/ActiveSession";
 import SessionLog from "./components/SessionLog";
 import Profile from "./components/Profile";
 import AuthSuccess from "./components/auth-success";
 
-const NO_DARK_ROUTES = ["/welcome", "/signup", "/login"];
+const NO_DARK_ROUTES = ["/welcome", "/signup", "/login", "/forgot-password", "/reset-password"]; // ← ADD THESE TO DISABLE DARK MODE
 
 function App() {
   const location = useLocation();
 
-  const disableDarkMode = NO_DARK_ROUTES.includes(location.pathname);
+  const disableDarkMode = NO_DARK_ROUTES.includes(location.pathname) || location.pathname.startsWith("/reset-password/"); // ← ADD THIS CHECK
 
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
@@ -54,7 +55,9 @@ function App() {
       <Route path="/welcome" element={<Welcome />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
-       <Route path="/forgot-password" element={<ForgetPassword />} />
+      <Route path="/forgot-password" element={<ForgetPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} /> {/* ← ADD THIS ROUTE */}
+      
 
       <Route
         path="/dashboard"

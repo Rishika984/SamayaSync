@@ -45,6 +45,27 @@ export const updateUserProfile = async (profileData) => {
   }
 };
 
+
+// Forgot password
+export const forgotPassword = async (email) => {
+  try {
+    const response = await API.post('/auth/forgot-password', { email });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Reset password
+export const resetPassword = async (token, password) => {
+  try {
+    const response = await API.put(`/auth/reset-password/${token}`, { password });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // Logout user
 export const logout = async () => {
   try {

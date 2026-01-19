@@ -1,14 +1,21 @@
 const User = require('../models/User');
-const generateToken = require('../utils/generateToken');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
-// @desc    Register new user
-// @route   POST /api/auth/register
-// @access  Public
-const register = async (req, res) => {
+// Generate JWT Token
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE || '30d',
+  });
+};
+
+// ------------------ REGISTER ------------------
+exports.register = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: email.toLowerCase() });
 
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
@@ -16,114 +23,98 @@ const register = async (req, res) => {
 
     const user = await User.create({
       fullName,
-      email,
+      email: email.toLowerCase(),
       password,
     });
 
-    if (user) {
-      return res.status(201).json({
-        _id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,  // ✅ CHANGED FROM joinDate
-        message: 'Registration successful'
-      });
-    } else {
-      return res.status(400).json({ message: 'Invalid user data' });
-    }
+    if (!user) return res.status(400).json({ message: 'Invalid user data' });
+
+    const token = generateToken(user._id);
+    setTokenCookie(res, token);
+
+    return res.status(201).json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      token,
+      message: 'Registration successful',
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Auth user & get token
-// @route   POST /api/auth/login
-// @access  Public
-const login = async (req, res) => {
+// ------------------ LOGIN ------------------
+exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
+    if (!user) return res.status(401).json({ message: 'Invalid email or password' });
 
-    // Check if user signed up with Google
     if (user.provider === 'google') {
       return res.status(400).json({
         message: 'This account uses Google sign-in. Please use the "Continue with Google" button.',
       });
     }
 
-    // Check password
-    if (await user.matchPassword(password)) {
-      const token = generateToken(user._id);
-
-      const cookieExpire = parseInt(process.env.JWT_COOKIE_EXPIRE || 30);
-
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production',
-        sameSite: process.env.COOKIE_SAME_SITE || 'lax',
-        maxAge: cookieExpire * 24 * 60 * 60 * 1000,
-      });
-
-      return res.json({
-        _id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,  // ✅ CHANGED FROM joinDate
-        message: 'Login successful'
-      });
-    } else {
+    if (!(await user.matchPassword(password))) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
 
-// @desc    Get current user
-// @route   GET /api/auth/me
-// @access  Private
-const getMe = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-    
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    const token = generateToken(user._id);
+    setTokenCookie(res, token);
 
     return res.json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
-      nickName: user.nickName,
-      studyGoal: user.studyGoal,
       role: user.role,
-      createdAt: user.createdAt,  // ✅ ADDED THIS
-      updatedAt: user.updatedAt,  // ✅ ADDED THIS
+      createdAt: user.createdAt,
+      token,
+      message: 'Login successful',
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Update user profile
-// @route   PUT /api/auth/profile
-// @access  Private
-const updateProfile = async (req, res) => {
+// ------------------ LOGOUT ------------------
+exports.logout = async (req, res) => {
+  try {
+    res.cookie('token', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+
+    return res.json({ message: 'Logout successful' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// ------------------ GET CURRENT USER ------------------
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    return res.json(user);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// ------------------ UPDATE PROFILE ------------------
+exports.updateProfile = async (req, res) => {
   try {
     const { nickName, studyGoal } = req.body;
 
     const user = await User.findById(req.user._id);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
     if (nickName !== undefined) user.nickName = nickName.trim();
     if (studyGoal !== undefined) user.studyGoal = studyGoal;
@@ -137,7 +128,7 @@ const updateProfile = async (req, res) => {
       nickName: user.nickName,
       studyGoal: user.studyGoal,
       role: user.role,
-      createdAt: user.createdAt,  // ✅ CHANGED FROM joinDate
+      createdAt: user.createdAt,
       message: 'Profile updated successfully',
     });
   } catch (error) {
@@ -145,26 +136,105 @@ const updateProfile = async (req, res) => {
   }
 };
 
-// @desc    Logout user
-// @route   POST /api/auth/logout
-// @access  Private
-const logout = async (req, res) => {
+// ------------------ FORGOT PASSWORD ------------------
+exports.forgotPassword = async (req, res) => {
   try {
-    res.cookie('token', '', {
-      httpOnly: true,
-      expires: new Date(0),
+    const { email } = req.body;
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.json({
+        message: 'Password reset link sent (if account exists)',
+      });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    user.resetPasswordToken = resetTokenHash;
+    user.resetPasswordExpire = Date.now() + 600000; // 10 minutes
+    await user.save();
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+    const message = `
+      <h2>Password Reset Request</h2>
+      <p>Please click the link below to reset your password:</p>
+      <a href="${resetUrl}" style="display:inline-block;padding:10px 20px;background-color:#a78bfa;color:white;text-decoration:none;border-radius:5px;">Reset Password</a>
+      <p>This link will expire in 10 Minutes.</p>
+      <b>If you didn't request this, ignore this email.</b>
+    `;
+
+    await sendEmail({ to: user.email, subject: 'Password Reset Request', html: message });
+
+    return res.json({
+      message: 'Password reset link sent to your email.',
     });
-    
-    return res.json({ message: 'Logout successful' });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    console.error('Forgot password error:', error);
+    return res.status(500).json({ message: 'Error sending password reset email' });
   }
 };
 
-module.exports = {
-  register,
-  login,
-  getMe,
-  updateProfile,
-  logout,
+// ------------------ RESET PASSWORD ------------------
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password || password.length < 6)
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+
+    const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken: resetTokenHash,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) return res.status(400).json({ message: 'Invalid or expired reset token' });
+
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    return res.json({ message: 'Password reset successful. You can now login.' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    return res.status(500).json({ message: 'Error resetting password' });
+  }
 };
+
+// ------------------ HELPER FUNCTIONS ------------------
+function setTokenCookie(res, token) {
+  const cookieExpire = parseInt(process.env.JWT_COOKIE_EXPIRE || 30);
+
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production',
+    sameSite: process.env.COOKIE_SAME_SITE || 'lax',
+    maxAge: 10 * 60 * 1000,
+  });
+}
+
+async function sendEmail({ to, subject, html }) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: process.env.EMAIL_PORT || 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  await transporter.sendMail({
+    from: `"Samaya Sync" <${process.env.EMAIL_USER}>`,
+    to,
+    subject,
+    html,
+  });
+}

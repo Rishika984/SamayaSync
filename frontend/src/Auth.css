@@ -1,0 +1,78 @@
+/* Page background */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9f8ff;
+}
+
+/* Card (same as dashboard cards) */
+.auth-form {
+  width: 100%;
+  max-width: 420px;
+  background: #dcd6ff;
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Title */
+.auth-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: #2f2f3a;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* Subtitle */
+.auth-subtitle {
+  text-align: center;
+  color: #6b6b85;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+/* Inputs */
+.auth-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #c7c2ff;
+  background: #ffffff;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: #a78bfa;
+}
+
+/* Primary button */
+.auth-button {
+  width: 100%;
+  background: #a78bfa;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.auth-button:hover {
+  background: #9176f3;
+}
+
+/* Links */
+.auth-link {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  color: #6d28d9;
+  font-size: 14px;
+  cursor: pointer;
+}
