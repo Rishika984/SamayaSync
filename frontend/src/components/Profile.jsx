@@ -50,17 +50,29 @@ function Profile({ darkMode, setDarkMode }) {
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || '';
         
+        // FIXED: Backend returns createdAt from timestamps, not joinDate
+        // The backend sends createdAt in the response
+        console.log('User data received:', userData); // Debug log
+        
+        const joinDateRaw = new Date(userData.createdAt);
+        
         // Format join date
-        const joinDateRaw = new Date(userData.createdAt || userData.joinDate || Date.now());
         const formattedJoinDate = joinDateRaw.toLocaleDateString('en-US', {
           month: 'short',
           day: '2-digit',
           year: 'numeric'
         });
 
-        // Calculate days since joining
+        // FIXED: Calculate days since joining correctly
         const today = new Date();
-        const totalDays = Math.max(0, Math.ceil((today - joinDateRaw) / (1000 * 60 * 60 * 24)));
+        today.setHours(0, 0, 0, 0); // Reset to start of today
+        
+        const joinDate = new Date(joinDateRaw);
+        joinDate.setHours(0, 0, 0, 0); // Reset to start of join day
+        
+        // Calculate difference in milliseconds, then convert to days
+        const diffTime = today - joinDate;
+        const totalDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
 
         setProfileData({
           firstName,

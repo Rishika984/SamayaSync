@@ -26,7 +26,7 @@ const register = async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
-        joinDate: user.joinDate,
+        createdAt: user.createdAt,  // ✅ CHANGED FROM joinDate
         message: 'Registration successful'
       });
     } else {
@@ -75,7 +75,7 @@ const login = async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
-        joinDate: user.joinDate,
+        createdAt: user.createdAt,  // ✅ CHANGED FROM joinDate
         message: 'Login successful'
       });
     } else {
@@ -104,7 +104,8 @@ const getMe = async (req, res) => {
       nickName: user.nickName,
       studyGoal: user.studyGoal,
       role: user.role,
-      joinDate: user.joinDate,
+      createdAt: user.createdAt,  // ✅ ADDED THIS
+      updatedAt: user.updatedAt,  // ✅ ADDED THIS
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -136,7 +137,7 @@ const updateProfile = async (req, res) => {
       nickName: user.nickName,
       studyGoal: user.studyGoal,
       role: user.role,
-      joinDate: user.joinDate,
+      createdAt: user.createdAt,  // ✅ CHANGED FROM joinDate
       message: 'Profile updated successfully',
     });
   } catch (error) {
