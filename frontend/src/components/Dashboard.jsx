@@ -239,10 +239,15 @@ function Dashboard({ darkMode, setDarkMode }) {
       calculateStats();
       calculateWeeklyProgress();
       loadTodaysPlans();
-    }, 7200000);
+    }, 30000); // Refresh every 30 seconds
 
     return () => clearInterval(interval);
   }, [showOnboard, calculateStats, calculateWeeklyProgress, loadTodaysPlans]);
+
+  // Re-calculate weekly progress when week offset changes
+  useEffect(() => {
+    calculateWeeklyProgress();
+  }, [weekOffset, calculateWeeklyProgress]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -426,12 +431,12 @@ function Dashboard({ darkMode, setDarkMode }) {
                           <div 
                             className="plan-progress-fill"
                             style={{ 
-                              width: `${getCompletionPercentage(0, item.targetMinutes)}%`
+                              width: `${getCompletionPercentage(item.actualDuration || 0, item.targetMinutes)}%`
                             }}
                           ></div>
                         </div>
                         <div className="plan-progress-text">
-                          {formatDuration(0)} / {formatDuration(item.targetMinutes)}
+                          {formatDuration(item.actualDuration || 0)} / {formatDuration(item.targetMinutes)}
                           {item.completed && <span className="plan-success"> ✅</span>}
                         </div>
                       </div>
