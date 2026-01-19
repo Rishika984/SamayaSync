@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getStudyStats, getWeeklyProgress, getTodaysPlans, createStudyPlan, togglePlanCompletion, deleteStudyPlan } from './services/studyService';
+import { getStudyStats, recalculateStats, getStudySessions, getTodaysPlans, createStudyPlan, togglePlanCompletion, deleteStudyPlan } from './services/studyService';
 import StartPrompt from './StartPrompt';
 import Sidebar from './Sidebar';
 import StatCard from './StatCard';
@@ -14,6 +14,7 @@ function Dashboard({ darkMode, setDarkMode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [todaysPlan, setTodaysPlan] = useState([]);
   const [planFormOpen, setPlanFormOpen] = useState(false);
+  const [weekOffset, setWeekOffset] = useState(0);
   const [newPlan, setNewPlan] = useState({
     subject: '',
     expectedDuration: 60 
@@ -25,13 +26,13 @@ function Dashboard({ darkMode, setDarkMode }) {
     averageSessionTime: '0 min'
   });
   const [progressData, setProgressData] = useState([
+    { day: 'Sun', hours: 0 },
     { day: 'Mon', hours: 0 },
     { day: 'Tue', hours: 0 },
     { day: 'Wed', hours: 0 },
     { day: 'Thu', hours: 0 },
     { day: 'Fri', hours: 0 },
-    { day: 'Sat', hours: 0 },
-    { day: 'Sun', hours: 0 }
+    { day: 'Sat', hours: 0 }
   ]);
 
   const loadTodaysPlans = useCallback(async () => {
@@ -110,14 +111,76 @@ function Dashboard({ darkMode, setDarkMode }) {
     });
   };
 
+  const getWeekDates = (offset) => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sunday
+    
+    // Calculate Sunday of the current week
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - currentDay + (offset * 7));
+    sunday.setHours(0, 0, 0, 0);
+    
+    // Calculate Saturday (end of week)
+    const saturday = new Date(sunday);
+    saturday.setDate(sunday.getDate() + 7);
+    
+    return { sunday, saturday };
+  };
+
+  const getWeekLabel = (offset) => {
+    if (offset === 0) return 'This Week';
+    if (offset === -1) return 'Last Week';
+    
+    const { sunday, saturday } = getWeekDates(offset);
+    const saturdayEnd = new Date(saturday);
+    saturdayEnd.setDate(saturdayEnd.getDate() - 1);
+    
+    const format = (date) => {
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    };
+    
+    return `${format(sunday)} - ${format(saturdayEnd)}`;
+  };
+
   const calculateWeeklyProgress = useCallback(async () => {
     try {
-      const weeklyData = await getWeeklyProgress();
+      const allSessions = await getStudySessions(200);
+      const { sunday, saturday } = getWeekDates(weekOffset);
+      
+      // Filter sessions for this week
+      const weekSessions = allSessions.filter(session => {
+        const sessionDate = new Date(session.studyDate);
+        return sessionDate >= sunday && sessionDate < saturday;
+      });
+      
+      // Initialize weekly data (Sunday to Saturday)
+      const weeklyData = [
+        { day: 'Sun', hours: 0 },
+        { day: 'Mon', hours: 0 },
+        { day: 'Tue', hours: 0 },
+        { day: 'Wed', hours: 0 },
+        { day: 'Thu', hours: 0 },
+        { day: 'Fri', hours: 0 },
+        { day: 'Sat', hours: 0 }
+      ];
+      
+      // Calculate hours for each day
+      weekSessions.forEach(session => {
+        const sessionDay = new Date(session.studyDate).getDay(); // 0 = Sunday
+        const hours = session.durationMinutes / 60;
+        weeklyData[sessionDay].hours += hours;
+      });
+      
+      // Round hours
+      weeklyData.forEach(day => {
+        day.hours = Math.round(day.hours * 10) / 10;
+      });
+      
       setProgressData(weeklyData);
     } catch (error) {
       console.error('Error loading weekly progress:', error);
     }
-  }, []);
+  }, [weekOffset]);
 
   const calculateStats = useCallback(async () => {
     try {
@@ -127,7 +190,6 @@ function Dashboard({ darkMode, setDarkMode }) {
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
       
-      // Fixed formatting logic
       let totalStudyHours;
       if (hours > 0 && minutes > 0) {
         totalStudyHours = `${hours}h ${minutes}m`;
@@ -156,16 +218,28 @@ function Dashboard({ darkMode, setDarkMode }) {
   }, []);
 
   useEffect(() => {
-    if (showOnboard) setPromptOpen(true);
-    loadTodaysPlans();
-    calculateStats();
-    calculateWeeklyProgress();
+    const initializeDashboard = async () => {
+      if (showOnboard) setPromptOpen(true);
+      
+      // Recalculate stats on component mount to ensure accuracy
+      try {
+        await recalculateStats();
+      } catch (error) {
+        console.error('Error recalculating stats:', error);
+      }
+      
+      loadTodaysPlans();
+      calculateStats();
+      calculateWeeklyProgress();
+    };
+
+    initializeDashboard();
 
     const interval = setInterval(() => {
       calculateStats();
       calculateWeeklyProgress();
       loadTodaysPlans();
-    }, 30000);
+    }, 7200000);
 
     return () => clearInterval(interval);
   }, [showOnboard, calculateStats, calculateWeeklyProgress, loadTodaysPlans]);
@@ -176,6 +250,20 @@ function Dashboard({ darkMode, setDarkMode }) {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const goToPreviousWeek = () => {
+    setWeekOffset(prev => prev - 1);
+  };
+
+  const goToNextWeek = () => {
+    if (weekOffset < 0) {
+      setWeekOffset(prev => prev + 1);
+    }
+  };
+
+  const goToCurrentWeek = () => {
+    setWeekOffset(0);
   };
 
   return (
@@ -218,7 +306,36 @@ function Dashboard({ darkMode, setDarkMode }) {
 
         <div className="dashboard-content">
           <div className="progress-section">
-            <h2 className="section-title">Progress</h2>
+            <div className="progress-header">
+              <h2 className="section-title">Progress</h2>
+              <div className="week-navigation">
+                <button 
+                  className="week-nav-btn"
+                  onClick={goToPreviousWeek}
+                  title="Previous week"
+                >
+                  ←
+                </button>
+                <span className="week-label">{getWeekLabel(weekOffset)}</span>
+                <button 
+                  className="week-nav-btn"
+                  onClick={goToNextWeek}
+                  disabled={weekOffset === 0}
+                  title="Next week"
+                >
+                  →
+                </button>
+                {weekOffset !== 0 && (
+                  <button 
+                    className="week-current-btn"
+                    onClick={goToCurrentWeek}
+                    title="Go to current week"
+                  >
+                    Current Week
+                  </button>
+                )}
+              </div>
+            </div>
             <div className="chart-container">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart 

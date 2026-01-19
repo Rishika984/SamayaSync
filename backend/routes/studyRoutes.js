@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
   getStudyStats,
+  recalculateStats,
   createStudySession,
   getStudySessions,
   getTodaysSessions,
@@ -16,6 +17,7 @@ const { protect } = require('../middleware/authMiddleware');
 
 // Stats
 router.get('/stats', protect, getStudyStats);
+router.post('/stats/recalculate', protect, recalculateStats);
 
 // Sessions
 router.post('/sessions', protect, createStudySession);

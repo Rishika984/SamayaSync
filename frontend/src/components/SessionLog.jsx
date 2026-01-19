@@ -1,29 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { getTodaysSessions } from './services/studyService';
+import { getStudySessions } from './services/studyService';
 import Sidebar from './Sidebar';
 
 function SessionLog({ darkMode, setDarkMode }) {
-  const [todaysSessions, setTodaysSessions] = useState([]);
+  const [sessions, setSessions] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState('today');
 
   useEffect(() => {
-    const loadTodaysSessions = async () => {
+    const loadSessions = async () => {
       try {
         setLoading(true);
-        const sessions = await getTodaysSessions();
-        setTodaysSessions(sessions || []);
+        const allSessions = await getStudySessions(100);
+        setSessions(allSessions || []);
       } catch (error) {
         console.error('Error loading sessions:', error);
-        setTodaysSessions([]);
+        setSessions([]);
       } finally {
         setLoading(false);
       }
     };
 
-    loadTodaysSessions();
+    loadSessions();
 
-    const interval = setInterval(loadTodaysSessions, 30000);
+    const interval = setInterval(loadSessions, 30000);
 
     return () => clearInterval(interval);
   }, []);
@@ -61,6 +62,69 @@ function SessionLog({ darkMode, setDarkMode }) {
     return date.toLocaleDateString();
   };
 
+  const isToday = (date) => {
+    const today = new Date();
+    const checkDate = new Date(date);
+    return checkDate.toDateString() === today.toDateString();
+  };
+
+  const isYesterday = (date) => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const checkDate = new Date(date);
+    return checkDate.toDateString() === yesterday.toDateString();
+  };
+
+  const filterSessionsByDate = (sessions) => {
+    if (selectedDate === 'all') return sessions;
+
+    return sessions.filter(session => {
+      if (selectedDate === 'today') {
+        return isToday(session.studyDate);
+      } else if (selectedDate === 'yesterday') {
+        return isYesterday(session.studyDate);
+      } else if (selectedDate === 'week') {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        return new Date(session.studyDate) >= weekAgo;
+      } else if (selectedDate === 'month') {
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        return new Date(session.studyDate) >= monthAgo;
+      }
+      return true;
+    });
+  };
+
+  const groupSessionsByDate = (sessions) => {
+    const grouped = {};
+    
+    sessions.forEach(session => {
+      const date = new Date(session.studyDate);
+      let label;
+      
+      if (isToday(date)) {
+        label = 'Today';
+      } else if (isYesterday(date)) {
+        label = 'Yesterday';
+      } else {
+        label = date.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      }
+      
+      if (!grouped[label]) {
+        grouped[label] = [];
+      }
+      grouped[label].push(session);
+    });
+    
+    return grouped;
+  };
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -68,6 +132,45 @@ function SessionLog({ darkMode, setDarkMode }) {
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
+
+  const filteredSessions = filterSessionsByDate(sessions);
+  const groupedSessions = groupSessionsByDate(filteredSessions);
+
+  // Get the last day with sessions (excluding today)
+  const getLastDayWithSessions = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const pastSessions = sessions.filter(session => {
+      const sessionDate = new Date(session.studyDate);
+      sessionDate.setHours(0, 0, 0, 0);
+      return sessionDate < today;
+    });
+    
+    if (pastSessions.length === 0) return null;
+    
+    // Sort by date descending and get the most recent
+    const sortedSessions = pastSessions.sort((a, b) => 
+      new Date(b.studyDate) - new Date(a.studyDate)
+    );
+    
+    const lastDate = new Date(sortedSessions[0].studyDate);
+    lastDate.setHours(0, 0, 0, 0);
+    
+    // Get all sessions from that day
+    const lastDaySessions = sortedSessions.filter(session => {
+      const sessionDate = new Date(session.studyDate);
+      sessionDate.setHours(0, 0, 0, 0);
+      return sessionDate.getTime() === lastDate.getTime();
+    });
+    
+    return {
+      date: lastDate,
+      sessions: lastDaySessions
+    };
+  };
+
+  const lastDayData = getLastDayWithSessions();
 
   if (loading) {
     return (
@@ -104,28 +207,108 @@ function SessionLog({ darkMode, setDarkMode }) {
 
       <main className="dashboard-main">
         <div className="session-log-container">
-          {todaysSessions.length === 0 ? (
+          <div className="session-log-header">
+            <h2 className="section-title">Study Sessions</h2>
+            <div className="session-filters">
+              <button 
+                className={`filter-btn ${selectedDate === 'today' ? 'active' : ''}`}
+                onClick={() => setSelectedDate('today')}
+              >
+                Today
+              </button>
+              <button 
+                className={`filter-btn ${selectedDate === 'yesterday' ? 'active' : ''}`}
+                onClick={() => setSelectedDate('yesterday')}
+              >
+                Yesterday
+              </button>
+              <button 
+                className={`filter-btn ${selectedDate === 'week' ? 'active' : ''}`}
+                onClick={() => setSelectedDate('week')}
+              >
+                Last 7 Days
+              </button>
+              <button 
+                className={`filter-btn ${selectedDate === 'month' ? 'active' : ''}`}
+                onClick={() => setSelectedDate('month')}
+              >
+                Last Month
+              </button>
+              <button 
+                className={`filter-btn ${selectedDate === 'all' ? 'active' : ''}`}
+                onClick={() => setSelectedDate('all')}
+              >
+                All Time
+              </button>
+            </div>
+          </div>
+
+          {filteredSessions.length === 0 ? (
             <div className="empty-sessions">
-              <h2>No Sessions Completed Today</h2>
-              <p>Complete your first study session today to see it appear here!</p>
+              <h2>No Sessions Found</h2>
+              <p>
+                {selectedDate === 'today' && 'Complete your first study session today to see it appear here!'}
+                {selectedDate === 'yesterday' && 'No sessions were completed yesterday.'}
+                {selectedDate === 'week' && 'No sessions in the last 7 days.'}
+                {selectedDate === 'month' && 'No sessions in the last month.'}
+                {selectedDate === 'all' && 'Start studying to build your session history!'}
+              </p>
             </div>
           ) : (
-            <div className="session-log-grid">
-              {todaysSessions.map((session, index) => (
-                <div key={session._id || index} className="figma-session-card">
-                  <div 
-                    className="figma-session-header" 
-                    style={{ background: getRandomColor() }}
-                  />
-                  <div className="figma-session-body">
-                    <div className="figma-session-subject">
-                      {session.subject ? session.subject.toUpperCase() : 'GENERAL STUDY'}
-                    </div>
-                    <div className="figma-session-hours">{formatDuration(session.durationMinutes || 0)}</div>
-                    <div className="figma-session-date">{formatDate(session.studyDate || new Date())}</div>
+            <div className="session-history">
+              {Object.entries(groupedSessions).map(([date, dateSessions]) => (
+                <div key={date} className="session-date-group">
+                  <h3 className="session-date-header">{date}</h3>
+                  <div className="session-log-grid">
+                    {dateSessions.map((session, index) => (
+                      <div key={session._id || index} className="figma-session-card">
+                        <div 
+                          className="figma-session-header" 
+                          style={{ background: getRandomColor() }}
+                        />
+                        <div className="figma-session-body">
+                          <div className="figma-session-subject">
+                            {session.subject ? session.subject.toUpperCase() : 'GENERAL STUDY'}
+                          </div>
+                          <div className="figma-session-hours">{formatDuration(session.durationMinutes || 0)}</div>
+                          <div className="figma-session-date">{formatDate(session.studyDate || new Date())}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Last Day with Sessions - Only show when viewing "Today" and there are past sessions */}
+          {selectedDate === 'today' && lastDayData && (
+            <div className="last-day-section">
+              <div className="last-day-header">
+                <h3 className="last-day-title">
+                  {isYesterday(lastDayData.date) 
+                    ? 'Yesterday' 
+                    : `Last Study Day - ${formatDate(lastDayData.date)}`
+                  }
+                </h3>
+              </div>
+              <div className="session-log-grid">
+                {lastDayData.sessions.map((session, index) => (
+                  <div key={session._id || index} className="figma-session-card">
+                    <div 
+                      className="figma-session-header" 
+                      style={{ background: getRandomColor() }}
+                    />
+                    <div className="figma-session-body">
+                      <div className="figma-session-subject">
+                        {session.subject ? session.subject.toUpperCase() : 'GENERAL STUDY'}
+                      </div>
+                      <div className="figma-session-hours">{formatDuration(session.durationMinutes || 0)}</div>
+                      <div className="figma-session-date">{formatDate(session.studyDate || new Date())}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

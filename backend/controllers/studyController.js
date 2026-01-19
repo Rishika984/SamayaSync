@@ -31,6 +31,49 @@ exports.getStudyStats = async (req, res) => {
   }
 };
 
+// @desc    Recalculate user study stats from all sessions
+// @route   POST /api/study/stats/recalculate
+// @access  Private
+exports.recalculateStats = async (req, res) => {
+  try {
+    // Get all sessions for this user
+    const sessions = await StudySession.find({ userId: req.user._id });
+    
+    // Calculate totals from actual sessions
+    const totalMinutes = sessions.reduce((sum, session) => sum + (session.durationMinutes || 0), 0);
+    const totalSessions = sessions.length;
+    const averageSessionMinutes = totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0;
+    
+    // Get last study date
+    const lastStudyDate = sessions.length > 0 
+      ? sessions.sort((a, b) => new Date(b.studyDate) - new Date(a.studyDate))[0].studyDate
+      : null;
+    
+    // Recalculate streak
+    await updateStreak(req.user._id);
+    
+    // Update or create stats
+    const updatedStats = await StudyStats.findByIdAndUpdate(
+      req.user._id,
+      {
+        totalMinutes,
+        totalSessions,
+        averageSessionMinutes,
+        lastStudyDate,
+      },
+      { upsert: true, new: true }
+    );
+    
+    res.json({ 
+      message: 'Stats recalculated successfully',
+      stats: updatedStats 
+    });
+  } catch (error) {
+    console.error('Error recalculating stats:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // ============================================
 // STUDY SESSIONS
 // ============================================

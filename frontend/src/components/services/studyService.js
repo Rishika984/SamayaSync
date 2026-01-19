@@ -14,6 +14,16 @@ export const getStudyStats = async () => {
   }
 };
 
+// Recalculate study stats
+export const recalculateStats = async () => {
+  try {
+    const response = await API.post('/study/stats/recalculate');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // ============================================
 // STUDY SESSIONS
 // ============================================
@@ -102,9 +112,6 @@ export const togglePlanCompletion = async (planId) => {
   }
 };
 
-// ============================================
-// WEEKLY PROGRESS
-// ============================================
 
 // Get weekly progress data
 export const getWeeklyProgress = async () => {
