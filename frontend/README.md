@@ -4,12 +4,12 @@ SamayaSync is a study session tracker that helps students plan, record, and anal
 
 ## Features
 
-*   Create and manage study sessions
-*   Set goals and track progress
-*   Record study sessions with notes and tags
-*   View detailed statistics of study sessions
-*   Set reminders and notifications
-*   Integrate with Google Calendar
+*   Create and manage study sessions: Create study sessions with a title, duration, and optional notes and tags.
+*   Set goals and track progress: Set goals and track your progress with detailed statistics of study sessions.
+*   Record study sessions with notes and tags: Record study sessions with notes and tags to help you remember important details.
+*   View detailed statistics of study sessions: View detailed statistics of study sessions, including total study time, average study time, and streaks.
+*   Set reminders and notifications: Set reminders and notifications to help you stay on track with your study goals.
+*   Integrate with Google Calendar: Integrate with Google Calendar to schedule study sessions and set reminders.
 
 ## Technologies Used
 
