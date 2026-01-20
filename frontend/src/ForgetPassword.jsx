@@ -40,7 +40,7 @@ function ForgotPassword() {
 
           <h2 className="section-title">Forgot Password</h2>
           <p style={{ color: '#64748b', marginBottom: 20 }}>
-            Enter your email to receive a password reset link
+            Enter your email
           </p>
 
           {success && (
