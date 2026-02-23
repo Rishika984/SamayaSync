@@ -30,7 +30,7 @@ function SessionLog({ darkMode, setDarkMode }) {
   }, []);
 
   const getRandomColor = () => {
-    const gradients = [
+    const lightGradients = [
       'linear-gradient(135deg, #FFA07A 0%, #FF8C69 50%, #FF7F50 100%)',
       'linear-gradient(135deg, #87CEEB 0%, #87CEFA 50%, #B0E0E6 100%)',
       'linear-gradient(135deg, #FF9999 0%, #FFB6C1 50%, #FFC0CB 100%)',
@@ -40,7 +40,20 @@ function SessionLog({ darkMode, setDarkMode }) {
       'linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 50%, #FFE4E1 100%)',
       'linear-gradient(135deg, #98FB98 0%, #AFEEEE 50%, #E0FFFF 100%)'
     ];
-    return gradients[Math.floor(Math.random() * gradients.length)];
+
+    const darkGradients = [
+      'linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%)',
+      'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+      'linear-gradient(135deg, #111827 0%, #1f2937 100%)',
+      'linear-gradient(135deg, #064e3b 0%, #065f46 100%)',
+      'linear-gradient(135deg, #701a75 0%, #86198f 100%)',
+      'linear-gradient(135deg, #451a03 0%, #78350f 100%)',
+      'linear-gradient(135deg, #312e81 0%, #3730a3 100%)',
+      'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)'
+    ];
+
+    const selectedGradients = darkMode ? darkGradients : lightGradients;
+    return selectedGradients[Math.floor(Math.random() * selectedGradients.length)];
   };
 
   const formatDuration = (minutes) => {
@@ -98,30 +111,30 @@ function SessionLog({ darkMode, setDarkMode }) {
 
   const groupSessionsByDate = (sessions) => {
     const grouped = {};
-    
+
     sessions.forEach(session => {
       const date = new Date(session.studyDate);
       let label;
-      
+
       if (isToday(date)) {
         label = 'Today';
       } else if (isYesterday(date)) {
         label = 'Yesterday';
       } else {
-        label = date.toLocaleDateString('en-US', { 
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
+        label = date.toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
         });
       }
-      
+
       if (!grouped[label]) {
         grouped[label] = [];
       }
       grouped[label].push(session);
     });
-    
+
     return grouped;
   };
 
@@ -140,30 +153,30 @@ function SessionLog({ darkMode, setDarkMode }) {
   const getLastDayWithSessions = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const pastSessions = sessions.filter(session => {
       const sessionDate = new Date(session.studyDate);
       sessionDate.setHours(0, 0, 0, 0);
       return sessionDate < today;
     });
-    
+
     if (pastSessions.length === 0) return null;
-    
+
     // Sort by date descending and get the most recent
-    const sortedSessions = pastSessions.sort((a, b) => 
+    const sortedSessions = pastSessions.sort((a, b) =>
       new Date(b.studyDate) - new Date(a.studyDate)
     );
-    
+
     const lastDate = new Date(sortedSessions[0].studyDate);
     lastDate.setHours(0, 0, 0, 0);
-    
+
     // Get all sessions from that day
     const lastDaySessions = sortedSessions.filter(session => {
       const sessionDate = new Date(session.studyDate);
       sessionDate.setHours(0, 0, 0, 0);
       return sessionDate.getTime() === lastDate.getTime();
     });
-    
+
     return {
       date: lastDate,
       sessions: lastDaySessions
@@ -210,31 +223,31 @@ function SessionLog({ darkMode, setDarkMode }) {
           <div className="session-log-header">
             <h2 className="section-title">Study Sessions</h2>
             <div className="session-filters">
-              <button 
+              <button
                 className={`filter-btn ${selectedDate === 'today' ? 'active' : ''}`}
                 onClick={() => setSelectedDate('today')}
               >
                 Today
               </button>
-              <button 
+              <button
                 className={`filter-btn ${selectedDate === 'yesterday' ? 'active' : ''}`}
                 onClick={() => setSelectedDate('yesterday')}
               >
                 Yesterday
               </button>
-              <button 
+              <button
                 className={`filter-btn ${selectedDate === 'week' ? 'active' : ''}`}
                 onClick={() => setSelectedDate('week')}
               >
                 Last 7 Days
               </button>
-              <button 
+              <button
                 className={`filter-btn ${selectedDate === 'month' ? 'active' : ''}`}
                 onClick={() => setSelectedDate('month')}
               >
                 Last Month
               </button>
-              <button 
+              <button
                 className={`filter-btn ${selectedDate === 'all' ? 'active' : ''}`}
                 onClick={() => setSelectedDate('all')}
               >
@@ -262,8 +275,8 @@ function SessionLog({ darkMode, setDarkMode }) {
                   <div className="session-log-grid">
                     {dateSessions.map((session, index) => (
                       <div key={session._id || index} className="figma-session-card">
-                        <div 
-                          className="figma-session-header" 
+                        <div
+                          className="figma-session-header"
                           style={{ background: getRandomColor() }}
                         />
                         <div className="figma-session-body">
@@ -286,8 +299,8 @@ function SessionLog({ darkMode, setDarkMode }) {
             <div className="last-day-section">
               <div className="last-day-header">
                 <h3 className="last-day-title">
-                  {isYesterday(lastDayData.date) 
-                    ? 'Yesterday' 
+                  {isYesterday(lastDayData.date)
+                    ? 'Yesterday'
                     : `Last Study Day - ${formatDate(lastDayData.date)}`
                   }
                 </h3>
@@ -295,8 +308,8 @@ function SessionLog({ darkMode, setDarkMode }) {
               <div className="session-log-grid">
                 {lastDayData.sessions.map((session, index) => (
                   <div key={session._id || index} className="figma-session-card">
-                    <div 
-                      className="figma-session-header" 
+                    <div
+                      className="figma-session-header"
                       style={{ background: getRandomColor() }}
                     />
                     <div className="figma-session-body">

@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-    transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
 }
 
 
@@ -11,7 +11,7 @@
 
 :root {
   --white: #ffffff;
-  --black:#000;
+  --black: #000;
   --primary: #6A6193;
 
   --head-title: #6A6193;
@@ -62,14 +62,25 @@
 
 
   --card-radius: 12px;
-  --nav-active:#1e293b;
-  
+  --nav-active: #1e293b;
 
+  --sidebar-hover: rgba(255, 255, 255, 0.5);
+  --sidebar-border: rgba(100, 116, 139, 0.2);
+  --input-border: rgba(106, 97, 147, 0.3);
+  --input-focus-shadow: rgba(106, 97, 147, 0.1);
+  --modal-backdrop: rgba(0, 0, 0, 0.35);
+  --progress-bg: rgba(165, 148, 249, 0.2);
+  --progress-info-bg: rgba(165, 148, 249, 0.1);
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --shadow: rgba(0, 0, 0, 0.1);
+  --shadow-lg: rgba(0, 0, 0, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --border-subtle: rgba(100, 116, 139, 0.2);
 }
 
 .dark {
   --white: #000;
-   --black:#ffffff;
+  --black: #ffffff;
   --primary: #f3e8ff;
   --head-title: #f3e8ff;
   --subtitle: #c4b5fd;
@@ -84,10 +95,23 @@
   --timer-bg: #3a2f47;
   --timer-text: #e9d5ff;
   --drop-dis: #3a2f47;
-  --nav-active:#1e293b;
-    --muted: #bcb9b9;
+  --nav-active: #1e293b;
+  --muted: #bcb9b9;
   --card-color: #2d2438;
   --side-gradient-bg: #231c2e;
+
+  --sidebar-hover: rgba(255, 255, 255, 0.1);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-focus-shadow: rgba(167, 139, 250, 0.1);
+  --modal-backdrop: rgba(0, 0, 0, 0.7);
+  --progress-bg: rgba(255, 255, 255, 0.1);
+  --progress-info-bg: rgba(255, 255, 255, 0.05);
+  --header-bg: rgba(26, 22, 37, 0.95);
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-lg: rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --border-subtle: rgba(255, 255, 255, 0.1);
 }
 
 
@@ -108,11 +132,11 @@ body {
 
 /* Header */
 .header {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--header-bg);
   backdrop-filter: blur(10px);
   padding: 1.75rem 2.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  border-bottom: 1px solid rgba(106, 97, 147, 0.1);
+  box-shadow: 0 2px 10px var(--shadow);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.1);
 }
 
 .header-container {
@@ -1037,7 +1061,8 @@ body {
   text-decoration: none;
   margin-bottom: 2rem;
 }
-.toggle-dark-mode{
+
+.toggle-dark-mode {
   background: none;
   border: none;
   cursor: pointer;
@@ -1055,13 +1080,13 @@ body {
   font-size: 1.4rem;
   border-radius: 8px;
   color: var(--primary);
-  transition: box-shadow 0.4s ease-in-out; 
+  transition: box-shadow 0.4s ease-in-out;
 
 }
 
-.toggle-dark-mode:hover{
-  
-  box-shadow: 0px 0px 3px rgba(100, 100, 100, 0.852);  
+.toggle-dark-mode:hover {
+
+  box-shadow: 0px 0px 3px rgba(100, 100, 100, 0.852);
 }
 
 
@@ -1381,7 +1406,7 @@ body {
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--black);
   margin-bottom: 0.25rem;
 }
 
@@ -1397,10 +1422,10 @@ body {
   transform: translateX(-50%);
   margin-top: 0.5rem;
   padding: 0.75rem 1rem;
-  background: #ffffff;
-  border: 1px solid #e0d4ff;
+  background: var(--textarea);
+  border: 1px solid var(--input-border);
   border-radius: 0.5rem;
-  color: #6a6193;
+  color: var(--primary);
   font-size: 0.875rem;
   font-weight: 500;
   white-space: nowrap;
@@ -1415,7 +1440,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
-  border-bottom-color: #ffffff;
+  border-bottom-color: var(--textarea);
 }
 
 .dashboard-content {
@@ -1432,7 +1457,7 @@ body {
 }
 
 .section-title {
-  color: #ffffff;
+  color: var(--head-title);
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
 }
@@ -1450,14 +1475,14 @@ body {
 }
 
 .plan-item {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--glass-bg);
   padding: 1rem;
   border-radius: 0.5rem;
 }
 
 .plan-subject {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--black);
   margin-bottom: 0.25rem;
 }
 
@@ -1492,11 +1517,11 @@ body {
 }
 
 .add-plan-form {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--glass-bg);
   padding: 1rem;
   border-radius: 0.5rem;
   margin-bottom: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border-subtle);
 }
 
 .form-row {
@@ -1566,7 +1591,7 @@ body {
 }
 
 .plan-item:hover {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--sidebar-hover);
 }
 
 .plan-info {
@@ -1601,9 +1626,9 @@ body {
   color: var(--primary);
   font-style: italic;
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--glass-bg);
   border-radius: 0.5rem;
-  border: 2px dashed rgba(255, 255, 255, 0.5);
+  border: 2px dashed var(--border-subtle);
 }
 
 /* ===== DASHBOARD PAGE MOBILE RESPONSIVENESS ===== */
@@ -1862,7 +1887,7 @@ body {
 }
 
 .figma-session-goal-text {
-  color: #6A6193;
+  color: var(--primary);
   font-size: 1rem;
   line-height: 1.6;
   margin: 0;
@@ -1871,7 +1896,7 @@ body {
 .figma-session-goal-input {
   width: 100%;
   background: var(--textarea);
-  border: 1px solid rgba(106, 97, 147, 0.3);
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   padding: 1rem;
   color: var(--textarea-color);
@@ -1885,19 +1910,19 @@ body {
 
 .figma-session-goal-input:focus {
   outline: none;
-  border-color: #6A6193;
+  border-color: var(--primary);
   background: var(--textarea-focus);
-  box-shadow: 0 0 0 3px rgba(106, 97, 147, 0.1);
+  box-shadow: 0 0 0 3px var(--input-focus-shadow);
 }
 
 .figma-session-goal-input:disabled {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--drop-dis);
   cursor: not-allowed;
   opacity: 0.7;
 }
 
 .figma-session-goal-input::placeholder {
-  color: rgba(106, 97, 147, 0.6);
+  color: var(--muted);
   font-style: italic;
 }
 
@@ -1979,7 +2004,7 @@ body {
 }
 
 .figma-timer-btn:hover:not(:disabled) {
-  background: #e2e8f0;
+  background: var(--textarea-focus);
 }
 
 .figma-timer-btn:disabled {
@@ -2014,8 +2039,8 @@ body {
 
 .figma-reset-btn {
   background: transparent;
-  color: #6A6193;
-  border: 1px solid #6A6193;
+  color: var(--primary);
+  border: 1px solid var(--primary);
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
   font-size: 0.9rem;
@@ -2024,8 +2049,8 @@ body {
 }
 
 .figma-reset-btn:hover {
-  background: #6A6193;
-  color: white;
+  background: var(--primary);
+  color: var(--white);
 }
 
 /* Subject Card */
@@ -2049,18 +2074,18 @@ body {
 }
 
 .figma-subject-item {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--textarea);
   padding: 1rem;
   border-radius: 0.5rem;
-  color: #1e293b;
+  color: var(--black);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .figma-subject-item:hover {
-  background: rgba(255, 255, 255, 0.95);
-  transform: translateY(-1px);
+  background: var(--textarea-focus);
+  transform: translateY(-2px);
 }
 
 /* ===== ACTIVE SESSION RESPONSIVE DESIGN ===== */
@@ -2129,7 +2154,7 @@ body {
     line-height: 1.6;
     text-align: center;
     margin-bottom: 2rem;
-    color: #64748b;
+    color: var(--muted);
     padding: 0 0.5rem;
   }
 
@@ -2142,10 +2167,10 @@ body {
 
   .subject-selection {
     margin-bottom: 2.5rem;
-    background: #ffffff80;
+    background: var(--textarea);
     padding: 1.5rem;
     border-radius: 12px;
-    border: 1px solid rgba(106, 97, 147, 0.15);
+    border: 1px solid var(--input-border);
   }
 
   .subject-selection label {
@@ -2167,15 +2192,17 @@ body {
     padding: 1rem;
     font-size: 1rem;
     border-radius: 8px;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--input-border);
+    background: var(--textarea);
+    color: var(--black);
   }
 
   .add-subject-btn {
     padding: 0.875rem 1rem;
     font-size: 0.9rem;
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
-    color: #64748b;
+    background: var(--textarea);
+    border: 2px solid var(--input-border);
+    color: var(--muted);
     border-radius: 8px;
     font-weight: 600;
   }
@@ -2186,10 +2213,10 @@ body {
     flex-direction: column;
     gap: 2rem;
     align-items: center;
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--textarea);
     padding: 2rem 1.5rem;
     border-radius: 16px;
-    border: 2px solid rgba(106, 97, 147, 0.1);
+    border: 2px solid var(--input-border);
   }
 
   .figma-timer-display {
@@ -2200,22 +2227,22 @@ body {
   .figma-timer-value {
     font-size: 3.5rem;
     font-weight: 800;
-    color: #6A6193;
+    color: var(--primary);
   }
 
   .figma-timer-unit {
     font-size: 1.25rem;
-    color: #64748b;
+    color: var(--muted);
     margin-left: 0.5rem;
   }
 
   .pomodoro-progress {
-    background: rgba(139, 92, 246, 0.05);
+    background: var(--progress-info-bg);
     padding: 1.5rem;
     border-radius: 14px;
     margin: 2rem 0;
-    border: 2px solid rgba(139, 92, 246, 0.15);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+    border: 2px solid var(--input-border);
+    box-shadow: 0 4px 12px var(--shadow);
   }
 
   .progress-info {
@@ -2229,12 +2256,12 @@ body {
   .progress-info span {
     font-size: 0.95rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--muted);
   }
 
   .progress-bar {
     height: 8px;
-    background: #e2e8f0;
+    background: var(--progress-bg);
     border-radius: 4px;
     overflow: hidden;
   }
@@ -2257,9 +2284,8 @@ body {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    border: 2px solid #e2e8f0;
-    background: #ffffff;
-    color: #6A6193;
+    background: var(--textarea);
+    color: var(--primary);
     font-size: 1.25rem;
     font-weight: 700;
     display: flex;
@@ -2267,11 +2293,12 @@ body {
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
+    border: 2px solid var(--input-border);
   }
 
   .figma-timer-btn:hover {
-    border-color: #8b5cf6;
-    background: #f8fafc;
+    border-color: var(--cta);
+    background: var(--textarea-focus);
   }
 
   .figma-session-buttons {
@@ -2296,8 +2323,8 @@ body {
   }
 
   .figma-start-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--shadow-lg);
   }
 
   .figma-reset-btn {
@@ -2305,17 +2332,17 @@ body {
     padding: 1rem;
     font-size: 1rem;
     font-weight: 600;
-    background: #f8fafc;
-    color: #64748b;
-    border: 2px solid #e2e8f0;
+    background: var(--textarea);
+    color: var(--muted);
+    border: 2px solid var(--input-border);
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
   .figma-reset-btn:hover {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
+    background: var(--textarea-focus);
+    border-color: var(--cta);
   }
 
   .current-subject-display {
@@ -2326,13 +2353,13 @@ body {
   .selected-subject {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #6A6193;
+    color: var(--primary);
     margin-bottom: 0.75rem;
   }
 
   .session-status {
     font-size: 1rem;
-    color: #64748b;
+    color: var(--muted);
     font-weight: 600;
   }
 
@@ -2352,8 +2379,10 @@ body {
   .add-subject-input {
     padding: 1rem;
     font-size: 1rem;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--input-border);
     border-radius: 8px;
+    background: var(--textarea);
+    color: var(--black);
   }
 
   .add-subject-buttons {
@@ -2378,9 +2407,9 @@ body {
     padding: 1rem;
     font-size: 1rem;
     font-weight: 600;
-    background: #f8fafc;
-    color: #64748b;
-    border: 2px solid #e2e8f0;
+    background: var(--textarea);
+    color: var(--muted);
+    border: 2px solid var(--input-border);
     border-radius: 8px;
   }
 }
@@ -2417,7 +2446,7 @@ body {
     margin-bottom: 1rem;
     font-weight: 700;
     text-align: center;
-    color: #6A6193;
+    color: var(--primary);
   }
 
   .figma-focus-subtitle {
@@ -2438,9 +2467,9 @@ body {
   .subject-selection {
     margin-bottom: 2rem;
     padding: 1.25rem;
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--textarea);
     border-radius: 12px;
-    border: 1px solid rgba(106, 97, 147, 0.1);
+    border: 1px solid var(--input-border);
   }
 
   .subject-selection label {
@@ -2463,10 +2492,10 @@ body {
   .figma-timer-section {
     margin: 2rem 0;
     gap: 1.5rem;
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--textarea);
     padding: 1.75rem 1.25rem;
     border-radius: 14px;
-    border: 2px solid rgba(106, 97, 147, 0.1);
+    border: 2px solid var(--input-border);
   }
 
   .figma-timer-value {
@@ -2485,6 +2514,9 @@ body {
     width: 45px;
     height: 45px;
     font-size: 1.125rem;
+    background: var(--textarea);
+    color: var(--primary);
+    border: 1px solid var(--input-border);
   }
 
   .figma-session-buttons {
@@ -2609,13 +2641,13 @@ body {
 }
 
 .figma-session-body {
-  background: linear-gradient(135deg, #CDC1FF 0%, #E8DDFF 50%, #F5EFFF 100%);
+  background: var(--card-color);
   padding: 2rem;
   text-align: center;
 }
 
 .figma-session-subject {
-  color: #6A6193;
+  color: var(--primary);
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -2623,14 +2655,14 @@ body {
 }
 
 .figma-session-hours {
-  color: #6A6193;
+  color: var(--primary);
   font-size: 2.5rem;
   font-weight: 700;
   opacity: 0.8;
 }
 
 .figma-session-date {
-  color: #6A6193;
+  color: var(--primary);
   font-size: 0.9rem;
   margin-top: 0.5rem;
   opacity: 0.7;
@@ -2640,7 +2672,7 @@ body {
 .empty-sessions {
   text-align: center;
   padding: 4rem 2rem;
-  color: #6A6193;
+  color: var(--primary);
 }
 
 .empty-sessions h2 {
@@ -2670,7 +2702,7 @@ body {
 .subject-dropdown {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   font-size: 0.95rem;
   background: var(--textarea);
@@ -2680,7 +2712,7 @@ body {
 
 .subject-dropdown:focus {
   outline: none;
-  border-color: #6A6193;
+  border-color: var(--primary);
 }
 
 .subject-dropdown:disabled {
@@ -2695,20 +2727,20 @@ body {
 }
 
 .selected-subject {
-  color: #6A6193;
+  color: var(--primary);
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
 }
 
 .session-status {
-  color: #6A6193;
+  color: var(--primary);
   font-size: 1rem;
   opacity: 0.8;
 }
 
 .no-subject {
-  color: #6A6193;
+  color: var(--primary);
   font-size: 1.1rem;
   opacity: 0.6;
 }
@@ -3051,14 +3083,14 @@ body {
 }
 
 .enhanced-profile-card {
-    background: var(--card-color);
+  background: var(--card-color);
   border-radius: 1.5rem;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
 
 .profile-hero {
-   padding: 2.5rem;
+  padding: 2.5rem;
   border-bottom: 1px solid #e2e8f0;
 }
 
@@ -3124,7 +3156,7 @@ body {
   gap: 2rem;
   font-size: 0.9rem;
   color: #64748b;
-} 
+}
 
 .profile-stats-enhanced {
   padding: 2rem 2.5rem;
@@ -3156,19 +3188,23 @@ body {
 }
 
 .stat-card-enhanced.primary {
-  background: linear-gradient(135deg, #fbfaff 0%, #dcd7ed 100%);
+  background: var(--glass-bg);
+  border: 1px solid var(--primary);
 }
 
 .stat-card-enhanced.secondary {
-  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  background: var(--glass-bg);
+  border: 1px solid #10b981;
 }
 
 .stat-card-enhanced.accent {
-  background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+  background: var(--glass-bg);
+  border: 1px solid #ef4444;
 }
 
 .stat-card-enhanced.info {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  background: var(--glass-bg);
+  border: 1px solid #3b82f6;
 }
 
 .stat-icon-enhanced {
@@ -3179,13 +3215,13 @@ body {
 .stat-value-enhanced {
   font-size: 2rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--black);
   margin-bottom: 0.25rem;
 }
 
 .stat-label-enhanced {
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--muted);
   font-weight: 500;
 }
 
@@ -3197,7 +3233,7 @@ body {
 .achievements-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--head-title);
   margin-bottom: 1.5rem;
 }
 
@@ -3224,7 +3260,7 @@ body {
 }
 
 .achievement-card.locked {
-  background: #f8fafc;
+  background: var(--glass-bg);
   opacity: 0.6;
 }
 
@@ -3240,13 +3276,13 @@ body {
 
 .achievement-info h4 {
   font-weight: 600;
-  color: #374151;
+  color: var(--black);
   margin-bottom: 0.25rem;
 }
 
 .achievement-desc {
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .achievement-checkmark {
@@ -4798,28 +4834,90 @@ body {
 }
 
 @media (max-width: 768px) {
+
   .session-log-header,
   .progress-header {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .session-filters,
   .week-navigation {
     width: 100%;
     justify-content: flex-start;
   }
-  
+
   .week-label {
     min-width: auto;
   }
 }
+
 /* Last Day Section Styles */
 .last-day-section {
   margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 2px solid #e0e0e0;
+  border-top: 2px solid var(--input-border);
 }
+
+/* Profile State Styles */
+.loading-state,
+.error-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+  font-size: 18px;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--primary);
+}
+
+.error-state {
+  color: #ef4444;
+}
+
+.loading-spinner {
+  border: 4px solid var(--textarea);
+  border-top: 4px solid var(--cta);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.error-login-btn {
+  padding: 10px 20px;
+  background: var(--cta);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.error-login-btn:hover {
+  background: var(--cta-hover);
+}
+
+.disabled-input {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--textarea) !important;
+  border-color: var(--input-border) !important;
+  color: var(--muted) !important;
+}
+
 
 .last-day-header {
   margin-bottom: 1.5rem;

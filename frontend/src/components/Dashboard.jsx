@@ -17,7 +17,7 @@ function Dashboard({ darkMode, setDarkMode }) {
   const [weekOffset, setWeekOffset] = useState(0);
   const [newPlan, setNewPlan] = useState({
     subject: '',
-    expectedDuration: 60 
+    expectedDuration: 60
   });
   const [stats, setStats] = useState({
     totalStudyHours: '0h',
@@ -46,14 +46,14 @@ function Dashboard({ darkMode, setDarkMode }) {
 
   const addPlan = async () => {
     if (!newPlan.subject.trim() || !newPlan.expectedDuration) return;
-    
+
     try {
       await createStudyPlan({
         title: newPlan.subject.trim(),
         targetMinutes: parseInt(newPlan.expectedDuration),
         date: new Date(),
       });
-      
+
       setNewPlan({ subject: '', expectedDuration: 60 });
       setPlanFormOpen(false);
       loadTodaysPlans();
@@ -102,43 +102,43 @@ function Dashboard({ darkMode, setDarkMode }) {
   };
 
   const startSessionFromPlan = (planItem) => {
-    navigate('/active-session', { 
-      state: { 
+    navigate('/active-session', {
+      state: {
         prefilledSubject: planItem.title,
         fromPlan: true,
         planId: planItem._id
-      } 
+      }
     });
   };
 
   const getWeekDates = (offset) => {
     const today = new Date();
     const currentDay = today.getDay(); // 0 = Sunday
-    
+
     // Calculate Sunday of the current week
     const sunday = new Date(today);
     sunday.setDate(today.getDate() - currentDay + (offset * 7));
     sunday.setHours(0, 0, 0, 0);
-    
+
     // Calculate Saturday (end of week)
     const saturday = new Date(sunday);
     saturday.setDate(sunday.getDate() + 7);
-    
+
     return { sunday, saturday };
   };
 
   const getWeekLabel = (offset) => {
     if (offset === 0) return 'This Week';
     if (offset === -1) return 'Last Week';
-    
+
     const { sunday, saturday } = getWeekDates(offset);
     const saturdayEnd = new Date(saturday);
     saturdayEnd.setDate(saturdayEnd.getDate() - 1);
-    
+
     const format = (date) => {
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     };
-    
+
     return `${format(sunday)} - ${format(saturdayEnd)}`;
   };
 
@@ -146,13 +146,13 @@ function Dashboard({ darkMode, setDarkMode }) {
     try {
       const allSessions = await getStudySessions(200);
       const { sunday, saturday } = getWeekDates(weekOffset);
-      
+
       // Filter sessions for this week
       const weekSessions = allSessions.filter(session => {
         const sessionDate = new Date(session.studyDate);
         return sessionDate >= sunday && sessionDate < saturday;
       });
-      
+
       // Initialize weekly data (Sunday to Saturday)
       const weeklyData = [
         { day: 'Sun', hours: 0 },
@@ -163,19 +163,19 @@ function Dashboard({ darkMode, setDarkMode }) {
         { day: 'Fri', hours: 0 },
         { day: 'Sat', hours: 0 }
       ];
-      
+
       // Calculate hours for each day
       weekSessions.forEach(session => {
         const sessionDay = new Date(session.studyDate).getDay(); // 0 = Sunday
         const hours = session.durationMinutes / 60;
         weeklyData[sessionDay].hours += hours;
       });
-      
+
       // Round hours
       weeklyData.forEach(day => {
         day.hours = Math.round(day.hours * 10) / 10;
       });
-      
+
       setProgressData(weeklyData);
     } catch (error) {
       console.error('Error loading weekly progress:', error);
@@ -185,11 +185,11 @@ function Dashboard({ darkMode, setDarkMode }) {
   const calculateStats = useCallback(async () => {
     try {
       const statsData = await getStudyStats();
-      
+
       const totalMinutes = statsData.totalMinutes || 0;
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
-      
+
       let totalStudyHours;
       if (hours > 0 && minutes > 0) {
         totalStudyHours = `${hours}h ${minutes}m`;
@@ -200,12 +200,12 @@ function Dashboard({ darkMode, setDarkMode }) {
       } else {
         totalStudyHours = '0m';
       }
-      
+
       const sessionsCompleted = statsData.totalSessions || 0;
       const averageMinutes = statsData.averageSessionMinutes || 0;
       const averageSessionTime = averageMinutes > 0 ? `${averageMinutes} min` : '0 min';
       const streakDays = statsData.currentStreak || 0;
-      
+
       setStats({
         totalStudyHours,
         sessionsCompleted,
@@ -220,14 +220,14 @@ function Dashboard({ darkMode, setDarkMode }) {
   useEffect(() => {
     const initializeDashboard = async () => {
       if (showOnboard) setPromptOpen(true);
-      
+
       // Recalculate stats on component mount to ensure accuracy
       try {
         await recalculateStats();
       } catch (error) {
         console.error('Error recalculating stats:', error);
       }
-      
+
       loadTodaysPlans();
       calculateStats();
       calculateWeeklyProgress();
@@ -286,26 +286,26 @@ function Dashboard({ darkMode, setDarkMode }) {
 
       <main className="dashboard-main">
         <div className="dashboard-stats">
-          <StatCard 
-            icon="📚" 
-            value={stats.totalStudyHours} 
-            label="Total study hours" 
+          <StatCard
+            icon="📚"
+            value={stats.totalStudyHours}
+            label="Total study hours"
           />
-          <StatCard 
-            icon="✓" 
-            value={stats.sessionsCompleted.toString()} 
-            label="Sessions Completed" 
+          <StatCard
+            icon="✓"
+            value={stats.sessionsCompleted.toString()}
+            label="Sessions Completed"
           />
-          <StatCard 
-            icon="🔥" 
-            value={stats.streakDays.toString()} 
+          <StatCard
+            icon="🔥"
+            value={stats.streakDays.toString()}
             label="Streak Days"
             tooltip="Complete at least 1 hour of study to earn a streak day. Keep it up!"
           />
-          <StatCard 
-            icon="🕐" 
-            value={stats.averageSessionTime} 
-            label="Average Session time" 
+          <StatCard
+            icon="🕐"
+            value={stats.averageSessionTime}
+            label="Average Session time"
           />
         </div>
 
@@ -314,7 +314,7 @@ function Dashboard({ darkMode, setDarkMode }) {
             <div className="progress-header">
               <h2 className="section-title">Progress</h2>
               <div className="week-navigation">
-                <button 
+                <button
                   className="week-nav-btn"
                   onClick={goToPreviousWeek}
                   title="Previous week"
@@ -322,7 +322,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                   ←
                 </button>
                 <span className="week-label">{getWeekLabel(weekOffset)}</span>
-                <button 
+                <button
                   className="week-nav-btn"
                   onClick={goToNextWeek}
                   disabled={weekOffset === 0}
@@ -331,7 +331,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                   →
                 </button>
                 {weekOffset !== 0 && (
-                  <button 
+                  <button
                     className="week-current-btn"
                     onClick={goToCurrentWeek}
                     title="Go to current week"
@@ -343,26 +343,36 @@ function Dashboard({ darkMode, setDarkMode }) {
             </div>
             <div className="chart-container">
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart 
+                <BarChart
                   data={progressData}
                   margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                  <XAxis 
-                    dataKey="day" 
-                    stroke="#64748b"
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={darkMode ? "#3a2f47" : "#e0e0e0"}
+                  />
+                  <XAxis
+                    dataKey="day"
+                    stroke={darkMode ? "#c4b5fd" : "#64748b"}
                     fontSize={12}
                     tickMargin={5}
                     interval={0}
                   />
-                  <YAxis stroke="#64748b" fontSize={12} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      background: '#fff', 
-                      border: '1px solid #e0e0e0',
+                  <YAxis
+                    stroke={darkMode ? "#c4b5fd" : "#64748b"}
+                    fontSize={12}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: darkMode ? '#2d2438' : '#fff',
+                      border: darkMode ? '1px solid #4e445c' : '1px solid #e0e0e0',
                       borderRadius: '8px',
-                      fontSize: '12px'
-                    }} 
+                      fontSize: '12px',
+                      color: darkMode ? '#e9d5ff' : '#64748b'
+                    }}
+                    itemStyle={{
+                      color: darkMode ? '#e9d5ff' : '#64748b'
+                    }}
                   />
                   <Bar dataKey="hours" fill="#a78bfa" radius={[8, 8, 0, 0]} />
                 </BarChart>
@@ -393,7 +403,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                   </div>
                 )}
               </div>
-              <button 
+              <button
                 className="add-plan-btn"
                 onClick={() => setPlanFormOpen(true)}
                 title="Add new plan"
@@ -405,7 +415,7 @@ function Dashboard({ darkMode, setDarkMode }) {
               {todaysPlan.length === 0 ? (
                 <div className="no-plans">
                   <p>No plans for today</p>
-                  <button 
+                  <button
                     className="add-first-plan-btn"
                     onClick={() => setPlanFormOpen(true)}
                   >
@@ -428,9 +438,9 @@ function Dashboard({ darkMode, setDarkMode }) {
                       <div className="plan-subject">{item.title}</div>
                       <div className="plan-progress-section">
                         <div className="plan-progress-bar">
-                          <div 
+                          <div
                             className="plan-progress-fill"
-                            style={{ 
+                            style={{
                               width: `${getCompletionPercentage(item.actualDuration || 0, item.targetMinutes)}%`
                             }}
                           ></div>
@@ -442,7 +452,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                       </div>
                     </div>
                     <div className="plan-actions">
-                      <button 
+                      <button
                         className="start-session-btn"
                         onClick={() => startSessionFromPlan(item)}
                         title="Start study session"
@@ -450,7 +460,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                       >
                         ▶️
                       </button>
-                      <button 
+                      <button
                         className="delete-plan-btn"
                         onClick={() => deletePlan(item._id)}
                         title="Delete plan"
@@ -465,11 +475,11 @@ function Dashboard({ darkMode, setDarkMode }) {
           </div>
         </div>
       </main>
-      
-      <StartPrompt 
-        open={promptOpen} 
-        onConfirm={() => setPromptOpen(false)} 
-        onCancel={() => setPromptOpen(false)} 
+
+      <StartPrompt
+        open={promptOpen}
+        onConfirm={() => setPromptOpen(false)}
+        onCancel={() => setPromptOpen(false)}
       />
 
       {planFormOpen && (
@@ -477,7 +487,7 @@ function Dashboard({ darkMode, setDarkMode }) {
           <div className="plan-modal" onClick={(e) => e.stopPropagation()}>
             <div className="plan-modal-header">
               <h3>Add New Plan</h3>
-              <button 
+              <button
                 className="plan-modal-close"
                 onClick={() => setPlanFormOpen(false)}
               >
@@ -492,7 +502,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                   type="text"
                   placeholder="e.g., Mathematics, Physics"
                   value={newPlan.subject}
-                  onChange={(e) => setNewPlan({...newPlan, subject: e.target.value})}
+                  onChange={(e) => setNewPlan({ ...newPlan, subject: e.target.value })}
                 />
               </div>
               <div className="plan-form-group">
@@ -500,7 +510,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                 <select
                   id="plan-duration"
                   value={newPlan.expectedDuration}
-                  onChange={(e) => setNewPlan({...newPlan, expectedDuration: parseInt(e.target.value)})}
+                  onChange={(e) => setNewPlan({ ...newPlan, expectedDuration: parseInt(e.target.value) })}
                 >
                   <option value={30}>30 minutes</option>
                   <option value={45}>45 minutes</option>
@@ -514,13 +524,13 @@ function Dashboard({ darkMode, setDarkMode }) {
               </div>
             </div>
             <div className="plan-modal-footer">
-              <button 
+              <button
                 className="plan-btn plan-btn-cancel"
                 onClick={() => setPlanFormOpen(false)}
               >
                 Cancel
               </button>
-              <button 
+              <button
                 className="plan-btn plan-btn-add"
                 onClick={addPlan}
                 disabled={!newPlan.subject.trim() || !newPlan.expectedDuration}

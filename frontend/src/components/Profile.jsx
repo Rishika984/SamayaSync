@@ -19,7 +19,7 @@ function Profile({ darkMode, setDarkMode }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [stats, setStats] = useState({
     totalHours: 0,
     sessionsCompleted: 0,
@@ -32,7 +32,7 @@ function Profile({ darkMode, setDarkMode }) {
     { id: 2, title: 'Consistency Champion', description: 'Study for 7 days in a row', icon: '🔥', unlocked: false },
     { id: 3, title: 'Marathon Master', description: 'Complete a 2-hour study session', icon: '⏰', unlocked: false },
     { id: 4, title: 'Century Club', description: 'Complete 100 total hours', icon: '💯', unlocked: false },
-    { id: 5, title: 'Early Bird', description: 'Start a session before 8 AM', icon: '🌅', unlocked: false },
+    // { id: 5, title: 'Early Bird', description: 'Start a session before 8 AM', icon: '🌅', unlocked: false },
     { id: 6, title: 'Night Owl', description: 'Study after 10 PM', icon: '🦉', unlocked: false }
   ]);
 
@@ -41,21 +41,21 @@ function Profile({ darkMode, setDarkMode }) {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch user profile
         const userData = await getCurrentUser();
-        
+
         // Split fullName into firstName and lastName
         const nameParts = userData.fullName ? userData.fullName.split(' ') : ['', ''];
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || '';
-        
+
         // FIXED: Backend returns createdAt from timestamps, not joinDate
         // The backend sends createdAt in the response
         console.log('User data received:', userData); // Debug log
-        
+
         const joinDateRaw = new Date(userData.createdAt);
-        
+
         // Format join date
         const formattedJoinDate = joinDateRaw.toLocaleDateString('en-US', {
           month: 'short',
@@ -66,10 +66,10 @@ function Profile({ darkMode, setDarkMode }) {
         // FIXED: Calculate days since joining correctly
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Reset to start of today
-        
+
         const joinDate = new Date(joinDateRaw);
         joinDate.setHours(0, 0, 0, 0); // Reset to start of join day
-        
+
         // Calculate difference in milliseconds, then convert to days
         const diffTime = today - joinDate;
         const totalDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
@@ -97,7 +97,7 @@ function Profile({ darkMode, setDarkMode }) {
           console.log('Stats not available yet:', statsError);
           // Keep default stats (all zeros)
         }
-        
+
         setError('');
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -126,7 +126,7 @@ function Profile({ darkMode, setDarkMode }) {
         nickName: profileData.nickName,
         studyGoal: profileData.studyGoal
       });
-      
+
       setShowSuccessPopup(true);
       setTimeout(() => setShowSuccessPopup(false), 3000);
     } catch (err) {
@@ -148,32 +148,16 @@ function Profile({ darkMode, setDarkMode }) {
   if (loading) {
     return (
       <div className="dashboard-layout">
-        <Sidebar 
-          isOpen={isMobileMenuOpen} 
-          onClose={closeMobileMenu} 
-          darkMode={darkMode} 
-          toggleDark={() => setDarkMode(prev => !prev)} 
+        <Sidebar
+          isOpen={isMobileMenuOpen}
+          onClose={closeMobileMenu}
+          darkMode={darkMode}
+          toggleDark={() => setDarkMode(prev => !prev)}
         />
         <main className="dashboard-main">
           <div className="profile-container">
-            <div className="loading-state" style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '60vh',
-              fontSize: '18px',
-              color: '#6366f1',
-              flexDirection: 'column',
-              gap: '20px'
-            }}>
-              <div className="loading-spinner" style={{
-                border: '4px solid #f3f4f6',
-                borderTop: '4px solid #6366f1',
-                borderRadius: '50%',
-                width: '40px',
-                height: '40px',
-                animation: 'spin 1s linear infinite'
-              }}></div>
+            <div className="loading-state">
+              <div className="loading-spinner"></div>
               <div>Loading profile...</div>
             </div>
           </div>
@@ -185,35 +169,19 @@ function Profile({ darkMode, setDarkMode }) {
   if (error) {
     return (
       <div className="dashboard-layout">
-        <Sidebar 
-          isOpen={isMobileMenuOpen} 
-          onClose={closeMobileMenu} 
-          darkMode={darkMode} 
-          toggleDark={() => setDarkMode(prev => !prev)} 
+        <Sidebar
+          isOpen={isMobileMenuOpen}
+          onClose={closeMobileMenu}
+          darkMode={darkMode}
+          toggleDark={() => setDarkMode(prev => !prev)}
         />
         <main className="dashboard-main">
           <div className="profile-container">
-            <div className="error-state" style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '60vh',
-              fontSize: '18px',
-              color: '#dc2626',
-              flexDirection: 'column',
-              gap: '20px'
-            }}>
+            <div className="error-state">
               <div>❌ {error}</div>
-              <button 
-                onClick={() => window.location.href = '/login'} 
-                style={{
-                  padding: '10px 20px',
-                  background: '#6366f1',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer'
-                }}
+              <button
+                onClick={() => window.location.href = '/login'}
+                className="error-login-btn"
               >
                 Go to Login
               </button>
@@ -244,20 +212,21 @@ function Profile({ darkMode, setDarkMode }) {
             <div className="profile-hero">
               <div className="profile-avatar-section">
                 <div className="profile-avatar-enhanced">
-                  <img 
+                  <img
                     src={`https://ui-avatars.com/api/?name=${encodeURIComponent(profileData.firstName || 'S')}+${encodeURIComponent(profileData.lastName || 'tudent')}&background=a78bfa&color=fff&size=120`}
-                    alt="Profile" 
+                    alt="Profile"
                     className="avatar-image-enhanced"
                   />
                 </div>
                 <div className="profile-info-enhanced">
                   <h2 className="profile-name-enhanced">
-                    {profileData.firstName || profileData.lastName ? 
-                      `${profileData.firstName} ${profileData.lastName}`.trim() : 
+                    {profileData.firstName || profileData.lastName ?
+                      `${profileData.nickName}`.trim() :
                       'Student'
                     }
                   </h2>
                   <p className="profile-nickname">{profileData.email}</p>
+
                   <div className="profile-meta">
                     <span className="join-date">📅 Member since {profileData.joinDate}</span>
                     <span className="days-active">⏱️ {profileData.totalDays} days on platform</span>
@@ -298,8 +267,8 @@ function Profile({ darkMode, setDarkMode }) {
               <h3 className="achievements-title">🏆 Achievements</h3>
               <div className="achievements-grid">
                 {achievements.map(achievement => (
-                  <div 
-                    key={achievement.id} 
+                  <div
+                    key={achievement.id}
                     className={`achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`}
                   >
                     <div className="achievement-icon">{achievement.icon}</div>
@@ -316,7 +285,7 @@ function Profile({ darkMode, setDarkMode }) {
             {/* Profile Form */}
             <form className="enhanced-profile-form" onSubmit={handleSave}>
               <h3 className="form-title">⚙️ Profile Settings</h3>
-              
+
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="firstName">First Name</label>
@@ -326,7 +295,7 @@ function Profile({ darkMode, setDarkMode }) {
                     name="firstName"
                     value={profileData.firstName}
                     disabled
-                    style={{ opacity: 0.6, cursor: 'not-allowed', background: '#f3f4f6' }}
+                    className="disabled-input"
                     title="Name is set during registration and cannot be changed"
                   />
                 </div>
@@ -338,7 +307,7 @@ function Profile({ darkMode, setDarkMode }) {
                     name="lastName"
                     value={profileData.lastName}
                     disabled
-                    style={{ opacity: 0.6, cursor: 'not-allowed', background: '#f3f4f6' }}
+                    className="disabled-input"
                     title="Name is set during registration and cannot be changed"
                   />
                 </div>
@@ -383,16 +352,15 @@ function Profile({ darkMode, setDarkMode }) {
                   name="email"
                   value={profileData.email}
                   disabled
-                  style={{ opacity: 0.6, cursor: 'not-allowed', background: '#f3f4f6' }}
+                  className="disabled-input"
                   title="Email is set during registration and cannot be changed"
                 />
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="enhanced-save-btn"
                 disabled={saving}
-                style={{ opacity: saving ? 0.7 : 1 }}
               >
                 {saving ? '💾 Saving...' : '💾 Save Profile Changes'}
               </button>
