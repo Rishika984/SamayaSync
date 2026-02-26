@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LogoutModal from './LogoutModal';
-import Logo  from './Images/logo.png';
+import Logo from './Images/logo.png';
 // Import the logout function from your API file
-import { logout } from './services/authService'; 
+import { logout } from './services/authService';
 import { MdOutlineLightMode, MdOutlineDarkMode } from "react-icons/md";
 
 function Sidebar({ isOpen, onClose, darkMode, toggleDark }) {
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false); 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const isActive = (path) => location.pathname === path;
 
@@ -27,20 +27,20 @@ function Sidebar({ isOpen, onClose, darkMode, toggleDark }) {
 
   const handleLogoutConfirm = async () => {
     setIsLoggingOut(true);
-    
+
     try {
-     
-      await logout(); 
+
+      await logout();
     } catch (error) {
       console.error("Server logout failed, forcing local logout:", error);
-      
+
     } finally {
-      
+
       localStorage.removeItem('userData');
       localStorage.removeItem('userProfile');
       localStorage.removeItem('completedSessions');
       localStorage.removeItem('dailyPlans');
-    
+
       setIsLoggingOut(false);
       setShowLogoutModal(false);
 
@@ -48,7 +48,7 @@ function Sidebar({ isOpen, onClose, darkMode, toggleDark }) {
         onClose();
       }
 
-      navigate('/');
+      navigate('/welcome');
     }
   };
 
@@ -61,37 +61,37 @@ function Sidebar({ isOpen, onClose, darkMode, toggleDark }) {
   return (
     <div className={`sidebar ${isOpen ? 'mobile-open' : ''}`}>
       <Link to="/" className="sidebar-logo">
-      <img src={Logo} className="logo-image " alt="समय SYNC" />
+        <img src={Logo} className="logo-image " alt="समय SYNC" />
         <span className="logo-hindi">समय</span>
         <span className="logo-english">SYNC</span>
       </Link>
 
-   <button className='toggle-dark-mode'  onClick={toggleDark}>
-  {darkMode ? <MdOutlineLightMode /> : <MdOutlineDarkMode />}
-</button>
+      <button className='toggle-dark-mode' onClick={toggleDark}>
+        {darkMode ? <MdOutlineLightMode /> : <MdOutlineDarkMode />}
+      </button>
 
 
 
       <nav className="sidebar-nav">
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className={`sidebar-link ${isActive('/') ? 'active' : ''}`}
           onClick={handleLinkClick}
         >
           Active Session
         </Link>
-       
-        
-        <Link 
-          to="/session-log" 
+
+
+        <Link
+          to="/session-log"
           className={`sidebar-link ${isActive('/session-log') ? 'active' : ''}`}
           onClick={handleLinkClick}
         >
           Session Log
         </Link>
 
-         <Link 
-          to="/dashboard" 
+        <Link
+          to="/dashboard"
           className={`sidebar-link ${isActive('/dashboard') ? 'active' : ''}`}
           onClick={handleLinkClick}
         >
@@ -100,26 +100,37 @@ function Sidebar({ isOpen, onClose, darkMode, toggleDark }) {
       </nav>
 
       <div className="sidebar-bottom">
-        <Link 
-          to="/profile" 
+        <Link
+          to="/profile"
           className={`sidebar-link ${isActive('/profile') ? 'active' : ''}`}
           onClick={handleLinkClick}
         >
           Profile
         </Link>
-        <button 
-          className="sidebar-link logout-btn" 
+        <button
+          className="sidebar-link logout-btn"
           onClick={handleLogoutClick}
         >
           Log out
         </button>
       </div>
 
+      {/* <div className="sidebar-footer">
+        <Link to="/features">Features</Link>
+        <span className="footer-dot">•</span>
+        <Link to="/about">About</Link>
+        <span className="footer-dot">•</span>
+        <Link to="/contact">Contact</Link>
+        <span className="footer-dot">•</span>
+
+        <div className="footer-more">© 2026 SamayaSync</div>
+      </div> */}
+
       <LogoutModal
         isOpen={showLogoutModal}
         onConfirm={handleLogoutConfirm}
         onCancel={handleLogoutCancel}
-        isLoading={isLoggingOut} 
+        isLoading={isLoggingOut}
       />
     </div>
   );
