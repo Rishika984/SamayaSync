@@ -26,13 +26,13 @@ function Dashboard({ darkMode, setDarkMode }) {
     averageSessionTime: '0 min'
   });
   const [progressData, setProgressData] = useState([
-    { day: 'Sun', hours: 0 },
-    { day: 'Mon', hours: 0 },
-    { day: 'Tue', hours: 0 },
-    { day: 'Wed', hours: 0 },
-    { day: 'Thu', hours: 0 },
-    { day: 'Fri', hours: 0 },
-    { day: 'Sat', hours: 0 }
+    { day: 'Sun', minutes: 0 },
+    { day: 'Mon', minutes: 0 },
+    { day: 'Tue', minutes: 0 },
+    { day: 'Wed', minutes: 0 },
+    { day: 'Thu', minutes: 0 },
+    { day: 'Fri', minutes: 0 },
+    { day: 'Sat', minutes: 0 }
   ]);
 
   const loadTodaysPlans = useCallback(async () => {
@@ -155,25 +155,19 @@ function Dashboard({ darkMode, setDarkMode }) {
 
       // Initialize weekly data (Sunday to Saturday)
       const weeklyData = [
-        { day: 'Sun', hours: 0 },
-        { day: 'Mon', hours: 0 },
-        { day: 'Tue', hours: 0 },
-        { day: 'Wed', hours: 0 },
-        { day: 'Thu', hours: 0 },
-        { day: 'Fri', hours: 0 },
-        { day: 'Sat', hours: 0 }
+        { day: 'Sun', minutes: 0 },
+        { day: 'Mon', minutes: 0 },
+        { day: 'Tue', minutes: 0 },
+        { day: 'Wed', minutes: 0 },
+        { day: 'Thu', minutes: 0 },
+        { day: 'Fri', minutes: 0 },
+        { day: 'Sat', minutes: 0 }
       ];
 
-      // Calculate hours for each day
+      // Calculate minutes for each day
       weekSessions.forEach(session => {
         const sessionDay = new Date(session.studyDate).getDay(); // 0 = Sunday
-        const hours = session.durationMinutes / 60;
-        weeklyData[sessionDay].hours += hours;
-      });
-
-      // Round hours
-      weeklyData.forEach(day => {
-        day.hours = Math.round(day.hours * 10) / 10;
+        weeklyData[sessionDay].minutes += session.durationMinutes;
       });
 
       setProgressData(weeklyData);
@@ -314,6 +308,15 @@ function Dashboard({ darkMode, setDarkMode }) {
             <div className="progress-header">
               <h2 className="section-title">Progress</h2>
               <div className="week-navigation">
+                {weekOffset !== 0 && (
+                  <button
+                    className="week-current-btn"
+                    onClick={goToCurrentWeek}
+                    title="Go to current week"
+                  >
+                    Current Week
+                  </button>
+                )}
                 <button
                   className="week-nav-btn"
                   onClick={goToPreviousWeek}
@@ -330,15 +333,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                 >
                   →
                 </button>
-                {weekOffset !== 0 && (
-                  <button
-                    className="week-current-btn"
-                    onClick={goToCurrentWeek}
-                    title="Go to current week"
-                  >
-                    Current Week
-                  </button>
-                )}
+
               </div>
             </div>
             <div className="chart-container">
@@ -361,8 +356,24 @@ function Dashboard({ darkMode, setDarkMode }) {
                   <YAxis
                     stroke={darkMode ? "#c4b5fd" : "#64748b"}
                     fontSize={12}
+                    tickFormatter={(value) => {
+                      // Determine if we should show minutes or hours based on max value in data
+                      const maxMinutes = Math.max(...progressData.map(d => d.minutes));
+                      if (maxMinutes <= 60) {
+                        return `${value}m`;
+                      } else {
+                        return `${(value / 60).toFixed(1)}h`;
+                      }
+                    }}
                   />
                   <Tooltip
+                    formatter={(value) => {
+                      if (value === 0) return '0m';
+                      if (value < 60) return `${value}m`;
+                      const h = Math.floor(value / 60);
+                      const m = value % 60;
+                      return m > 0 ? `${h}h ${m}m` : `${h}h`;
+                    }}
                     contentStyle={{
                       background: darkMode ? '#2d2438' : '#fff',
                       border: darkMode ? '1px solid #4e445c' : '1px solid #e0e0e0',
@@ -374,7 +385,7 @@ function Dashboard({ darkMode, setDarkMode }) {
                       color: darkMode ? '#e9d5ff' : '#64748b'
                     }}
                   />
-                  <Bar dataKey="hours" fill="#a78bfa" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="minutes" fill="#a78bfa" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

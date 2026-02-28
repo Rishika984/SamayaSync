@@ -11,7 +11,7 @@ function ActiveSession({ darkMode, setDarkMode }) {
   const showOnboard = location?.state?.showOnboard;
   const [promptOpen, setPromptOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
+
   const [minutes, setMinutes] = useState(25);
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
@@ -19,7 +19,11 @@ function ActiveSession({ darkMode, setDarkMode }) {
   const [sessionGoal, setSessionGoal] = useState('');
   const [originalMinutes, setOriginalMinutes] = useState(25);
   const [sessionStartTime, setSessionStartTime] = useState(null);
-  
+
+  // Custom time states
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [customInputMinutes, setCustomInputMinutes] = useState('25');
+
   // Pomodoro states
   const [isBreakTime, setIsBreakTime] = useState(false);
   const [totalStudyTime, setTotalStudyTime] = useState(0);
@@ -111,7 +115,7 @@ function ActiveSession({ darkMode, setDarkMode }) {
       if (sessionPhase === 'study') {
         const studyMinutes = isBreakTime ? 50 : (currentCycle === 1 ? 60 : 50);
         setStudiedTime(prev => prev + studyMinutes);
-        
+
         if (studiedTime + studyMinutes >= totalStudyTime) {
           setIsActive(false);
           saveCompletedSession();
@@ -126,10 +130,10 @@ function ActiveSession({ darkMode, setDarkMode }) {
       } else {
         setSessionPhase('study');
         setCurrentCycle(prev => prev + 1);
-        
+
         const remainingTime = totalStudyTime - studiedTime;
         const nextStudyDuration = Math.min(50, remainingTime);
-        
+
         setMinutes(nextStudyDuration);
         setSeconds(0);
         alert('💪 Break time is over! Ready for your next study session? Let\'s focus! 📚');
@@ -155,11 +159,11 @@ function ActiveSession({ darkMode, setDarkMode }) {
       alert('Please select a subject before starting the session!');
       return;
     }
-    
+
     if (!isActive && sessionPhase === 'study' && studiedTime === 0) {
       setTotalStudyTime(originalMinutes);
       setSessionStartTime(new Date());
-      
+
       if (originalMinutes >= 60) {
         setMinutes(60);
         setIsBreakTime(true);
@@ -168,7 +172,7 @@ function ActiveSession({ darkMode, setDarkMode }) {
         setIsBreakTime(false);
       }
     }
-    
+
     setIsActive(!isActive);
   };
 
@@ -190,6 +194,19 @@ function ActiveSession({ darkMode, setDarkMode }) {
       const newMinutes = Math.max(5, minutes - 5);
       setMinutes(newMinutes);
       setOriginalMinutes(newMinutes);
+    }
+  };
+
+  const handleCustomTimeSubmit = (e) => {
+    e.preventDefault();
+    const val = parseInt(customInputMinutes);
+    if (!isNaN(val) && val > 0 && val <= 1440) { // Limit to 24 hours
+      setMinutes(val);
+      setOriginalMinutes(val);
+      setSeconds(0);
+      setShowCustomInput(false);
+    } else {
+      alert('Please enter a valid number of minutes (1-1440).');
     }
   };
 
@@ -222,7 +239,7 @@ function ActiveSession({ darkMode, setDarkMode }) {
         {/* Session Goal Card */}
         <div className="figma-session-goal-card">
           <h2 className="figma-session-goal-title">Session Goal</h2>
-          <textarea 
+          <textarea
             className="figma-session-goal-input"
             value={sessionGoal}
             onChange={(e) => setSessionGoal(e.target.value)}
@@ -240,8 +257,8 @@ function ActiveSession({ darkMode, setDarkMode }) {
               {sessionPhase === 'break' ? '☕ Break Time' : 'Get ready to focus'}
             </h2>
             <p className="figma-focus-subtitle">
-              {sessionPhase === 'break' 
-                ? 'Take a break and recharge! You\'ve earned it.' 
+              {sessionPhase === 'break'
+                ? 'Take a break and recharge! You\'ve earned it.'
                 : 'Start a focused session, block distractions, and get closer to your goals—one session at a time.'
               }
             </p>
@@ -255,8 +272,8 @@ function ActiveSession({ darkMode, setDarkMode }) {
                   <span>Progress: {studiedTime}/{totalStudyTime} min</span>
                 </div>
                 <div className="progress-bar">
-                  <div 
-                    className="progress-fill" 
+                  <div
+                    className="progress-fill"
                     style={{ width: `${(studiedTime / totalStudyTime) * 100}%` }}
                   ></div>
                 </div>
@@ -277,15 +294,15 @@ function ActiveSession({ darkMode, setDarkMode }) {
                     onKeyPress={(e) => e.key === 'Enter' && addNewSubject()}
                   />
                   <div className="add-subject-buttons">
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={addNewSubject}
                       className="add-subject-save-btn"
                     >
                       Add
                     </button>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={cancelAddSubject}
                       className="add-subject-cancel-btn"
                     >
@@ -295,9 +312,9 @@ function ActiveSession({ darkMode, setDarkMode }) {
                 </div>
               ) : (
                 <div className="subject-dropdown-container">
-                  <select 
+                  <select
                     id="subject-select"
-                    value={currentSubject} 
+                    value={currentSubject}
                     onChange={(e) => setCurrentSubject(e.target.value)}
                     className="subject-dropdown"
                     disabled={isActive}
@@ -307,8 +324,8 @@ function ActiveSession({ darkMode, setDarkMode }) {
                       <option key={index} value={subject}>{subject}</option>
                     ))}
                   </select>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => setShowAddSubject(true)}
                     className="add-subject-btn"
                     disabled={isActive}
@@ -320,9 +337,30 @@ function ActiveSession({ darkMode, setDarkMode }) {
             </div>
 
             <div className="figma-timer-section">
-              <div className="figma-timer-display">
-                <span className="figma-timer-value">{isActive ? formatTime(minutes, seconds) : minutes}</span>
-                <span className="figma-timer-unit">{isActive ? '' : 'min'}</span>
+              <div
+                className={`figma-timer-display ${!isActive ? 'editable' : ''}`}
+                onClick={() => !isActive && setShowCustomInput(true)}
+              >
+                {showCustomInput && !isActive ? (
+                  <form onSubmit={handleCustomTimeSubmit} className="custom-time-form-inline">
+                    <input
+                      type="number"
+                      value={customInputMinutes}
+                      onChange={(e) => setCustomInputMinutes(e.target.value)}
+                      className="custom-time-input-inline"
+                      placeholder="Mins"
+                      min="1"
+                      max="1440"
+                      autoFocus
+                      onBlur={() => setShowCustomInput(false)}
+                    />
+                  </form>
+                ) : (
+                  <>
+                    <span className="figma-timer-value">{isActive ? formatTime(minutes, seconds) : minutes}</span>
+                    <span className="figma-timer-unit">{isActive ? '' : 'min'}</span>
+                  </>
+                )}
               </div>
               <div className="figma-timer-controls">
                 <button className="figma-timer-btn" onClick={incrementTime} disabled={isActive}>▲</button>
@@ -360,7 +398,7 @@ function ActiveSession({ darkMode, setDarkMode }) {
           </div>
         </div>
       </main>
-     
+
       <StartPrompt
         open={promptOpen}
         onConfirm={() => setPromptOpen(false)}

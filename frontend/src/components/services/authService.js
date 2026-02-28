@@ -45,6 +45,20 @@ export const updateUserProfile = async (profileData) => {
   }
 };
 
+// Upload profile picture
+export const uploadProfilePicture = async (formData) => {
+  try {
+    const response = await API.post('/auth/profile/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 // Forgot password
 export const forgotPassword = async (email) => {

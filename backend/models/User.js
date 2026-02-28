@@ -34,6 +34,7 @@ const userSchema = mongoose.Schema(
 
     googleId: String,
     avatar: String,
+    profileImage: String,
 
     nickName: {
       type: String,
@@ -62,7 +63,7 @@ const userSchema = mongoose.Schema(
     resetPasswordToken: String,
     resetPasswordExpire: Date,
   },
-  { 
+  {
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },

@@ -3092,6 +3092,11 @@ body {
 .profile-hero {
   padding: 2.5rem;
   border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
 .profile-avatar-section {
@@ -3249,19 +3254,19 @@ body {
   gap: 1rem;
   padding: 1rem;
   border-radius: 0.75rem;
-  border: 2px solid #e2e8f0;
+  background: white;
+  border: 1px solid #e2e8f0;
   transition: all 0.2s ease;
-  position: relative;
 }
 
 .achievement-card.unlocked {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border-color: #bbf7d0;
+  background: linear-gradient(to right, #ffffff, #f5f3ff);
+  border-color: #ddd6fe;
 }
 
 .achievement-card.locked {
-  background: var(--glass-bg);
-  opacity: 0.6;
+  opacity: 0.7;
+  filter: grayscale(1);
 }
 
 .achievement-card:hover {
@@ -3269,99 +3274,132 @@ body {
 }
 
 .achievement-icon {
-  font-size: 2rem;
-  width: 48px;
+  font-size: 2.5rem;
+  width: 50px;
   text-align: center;
 }
 
-.achievement-info h4 {
+.achievement-info {
+  flex: 1;
+}
+
+.achievement-name {
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--black);
+  color: #1e293b;
   margin-bottom: 0.25rem;
 }
 
 .achievement-desc {
-  font-size: 0.875rem;
-  color: var(--muted);
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.4;
 }
 
 .achievement-checkmark {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  color: #10b981;
+  color: #8b5cf6;
+  font-size: 1.25rem;
   font-weight: bold;
 }
 
-.enhanced-profile-form {
-  padding: 2rem 2.5rem;
+/* Edit Profile Settings Modal */
+.profile-actions-enhanced {
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  justify-content: flex-end;
+  background: #f8fafc;
+  border-radius: 0 0 1rem 1rem;
 }
 
-.form-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 1.5rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.enhanced-profile-form .form-group {
-  margin-bottom: 1.5rem;
-}
-
-.enhanced-profile-form label {
-  display: block;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
-
-.enhanced-profile-form input,
-.enhanced-profile-form textarea,
-.enhanced-profile-form select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
-}
-
-.enhanced-profile-form input:focus,
-.enhanced-profile-form textarea:focus,
-.enhanced-profile-form select:focus {
-  outline: none;
-  border-color: #a78bfa;
-  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
-}
-
-.enhanced-profile-form textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.enhanced-save-btn {
-  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+.edit-profile-btn {
+  background: #9170e6;
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   transition: all 0.2s ease;
-  width: 100%;
-  margin-top: 1rem;
+  box-shadow: 0 2px 4px rgba(145, 112, 230, 0.2);
 }
 
-.enhanced-save-btn:hover {
+.edit-profile-btn:hover {
+  background: #7c5bd6;
   transform: translateY(-1px);
-  box-shadow: 0 8px 16px rgba(167, 139, 250, 0.3);
+  box-shadow: 0 4px 6px rgba(145, 112, 230, 0.3);
+}
+
+.profile-edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.profile-edit-modal {
+  background: white;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-edit-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.profile-edit-modal-header h3 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.profile-edit-modal-body {
+  padding: 1.75rem;
+}
+
+.profile-edit-modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
 }
 
 /* Responsive Design for Tablets */
@@ -3583,20 +3621,20 @@ body {
     right: 0.25rem;
   }
 
-  .enhanced-profile-form .form-group {
-    margin-bottom: 1rem;
+  .profile-actions-enhanced {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
   }
 
-  .enhanced-profile-form input,
-  .enhanced-profile-form textarea,
-  .enhanced-profile-form select {
-    padding: 0.625rem;
-    font-size: 0.875rem;
+  .edit-profile-btn {
+    width: 100%;
+    justify-content: center;
   }
 
-  .enhanced-save-btn {
-    padding: 0.875rem 1.5rem;
-    font-size: 0.875rem;
+  .profile-edit-modal {
+    width: 95%;
+    max-height: 85vh;
   }
 }
 
@@ -4935,4 +4973,51 @@ body {
 .last-day-title::before {
   content: '📅';
   font-size: 1.25rem;
+}
+
+/* Custom Time Styles (Direct Edit) */
+.figma-timer-display.editable {
+  cursor: pointer;
+  position: relative;
+}
+
+.custom-time-form-inline {
+  display: flex;
+  align-items: center;
+}
+
+.custom-time-input-inline {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--cta);
+  color: var(--primary);
+  font-size: inherit;
+  font-weight: inherit;
+  width: 2.5ch;
+  /* Fits 2 digits comfortably */
+  text-align: center;
+  font-family: inherit;
+}
+
+.custom-time-input-inline:focus {
+  outline: none;
+  border-bottom-color: var(--cta-hover);
+}
+
+/* Hide arrows in number input */
+.custom-time-input-inline::-webkit-inner-spin-button,
+.custom-time-input-inline::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.custom-time-input-inline {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.dark .custom-time-input-inline {
+  color: var(--primary);
+  border-bottom-color: var(--cta);
 }

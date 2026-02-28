@@ -1,9 +1,12 @@
+console.log('--- Server Starting ---');
 require('./config/passport');
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
+const path = require('path');
+const fs = require('fs');
 const { errorHandler } = require('./middleware/errorMiddleware');
 
 // Load env vars
@@ -14,6 +17,13 @@ connectDB();
 
 const app = express();
 
+// Create uploads directory if it doesn't exist
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log('Created uploads directory');
+}
+
 // Middleware
 app.use(cors({
   origin: 'http://localhost:3000', // Your frontend URL
@@ -22,6 +32,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -40,4 +53,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log('--- Server Ready ---');
 });

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { getCurrentUser, updateUserProfile } from './services/authService';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { getCurrentUser, updateUserProfile, uploadProfilePicture } from './services/authService';
 import { getStudyStats } from './services/studyService';
 import Sidebar from './Sidebar';
 
@@ -7,8 +8,8 @@ function Profile({ darkMode, setDarkMode }) {
   const [profileData, setProfileData] = useState({
     firstName: '',
     lastName: '',
-    nickName: '',
     email: '',
+    profileImage: '',
     joinDate: '',
     studyGoal: '2 hours daily',
     totalDays: 0
@@ -19,6 +20,17 @@ function Profile({ darkMode, setDarkMode }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  // Modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    firstName: '',
+    lastName: '',
+    studyGoal: ''
+  });
+
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
 
   const [stats, setStats] = useState({
     totalHours: 0,
@@ -77,8 +89,8 @@ function Profile({ darkMode, setDarkMode }) {
         setProfileData({
           firstName,
           lastName,
-          nickName: userData.nickName || firstName || 'Learner',
           email: userData.email,
+          profileImage: userData.profileImage || '',
           joinDate: formattedJoinDate,
           studyGoal: userData.studyGoal || '2 hours daily',
           totalDays
@@ -110,9 +122,22 @@ function Profile({ darkMode, setDarkMode }) {
     fetchData();
   }, []);
 
-  const handleChange = (e) => {
-    setProfileData({
-      ...profileData,
+  const openEditModal = () => {
+    setEditFormData({
+      firstName: profileData.firstName,
+      lastName: profileData.lastName,
+      studyGoal: profileData.studyGoal
+    });
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+  };
+
+  const handleEditChange = (e) => {
+    setEditFormData({
+      ...editFormData,
       [e.target.name]: e.target.value
     });
   };
@@ -122,11 +147,22 @@ function Profile({ darkMode, setDarkMode }) {
     setSaving(true);
 
     try {
+      const fullName = `${editFormData.firstName} ${editFormData.lastName}`.trim();
+
       await updateUserProfile({
-        nickName: profileData.nickName,
-        studyGoal: profileData.studyGoal
+        fullName: fullName || undefined,
+        studyGoal: editFormData.studyGoal
       });
 
+      // Update local state to reflect changes immediately
+      setProfileData({
+        ...profileData,
+        firstName: editFormData.firstName,
+        lastName: editFormData.lastName,
+        studyGoal: editFormData.studyGoal
+      });
+
+      setShowEditModal(false);
       setShowSuccessPopup(true);
       setTimeout(() => setShowSuccessPopup(false), 3000);
     } catch (err) {
@@ -134,6 +170,52 @@ function Profile({ darkMode, setDarkMode }) {
       alert('Failed to update profile. Please try again.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Check file size (e.g., max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    setUploadingImage(true);
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await uploadProfilePicture(formData);
+
+      // Update the profile data with the new image URL
+      setProfileData(prev => ({
+        ...prev,
+        profileImage: response.profileImage
+      }));
+
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 3000);
+    } catch (error) {
+      console.error('Profile picture upload failed:', error);
+      // Only alert if it's a real error and not a component unmount or similar
+      if (!error.__CANCEL__) {
+        alert(`Upload failed: ${error.response?.data?.message || error.message || 'Unknown error'}`);
+      }
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -211,17 +293,54 @@ function Profile({ darkMode, setDarkMode }) {
           <div className="enhanced-profile-card">
             <div className="profile-hero">
               <div className="profile-avatar-section">
-                <div className="profile-avatar-enhanced">
-                  <img
-                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(profileData.firstName || 'S')}+${encodeURIComponent(profileData.lastName || 'tudent')}&background=a78bfa&color=fff&size=120`}
-                    alt="Profile"
-                    className="avatar-image-enhanced"
+                <div className="profile-avatar-wrapper" style={{ position: 'relative' }}>
+                  <div className="profile-avatar-enhanced">
+                    <img
+                      src={profileData.profileImage ? `http://localhost:5000${profileData.profileImage}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(profileData.firstName || 'S')}+${encodeURIComponent(profileData.lastName || 'tudent')}&background=a78bfa&color=fff&size=120`}
+                      alt="Profile"
+                      className="avatar-image-enhanced"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+
+                  <button
+                    className="avatar-upload-btn"
+                    onClick={triggerFileInput}
+                    disabled={uploadingImage}
+                    title="Change Profile Picture"
+                    style={{
+                      position: 'absolute',
+                      bottom: '0',
+                      right: '0',
+                      background: '#9170e6',
+                      color: 'white',
+                      border: '2px solid white',
+                      borderRadius: '50%',
+                      width: '36px',
+                      height: '36px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                      transition: 'all 0.2s',
+                      zIndex: 2,
+                    }}
+                  >
+                    {uploadingImage ? '⏳' : '📷'}
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    style={{ display: 'none' }}
                   />
                 </div>
                 <div className="profile-info-enhanced">
                   <h2 className="profile-name-enhanced">
                     {profileData.firstName || profileData.lastName ?
-                      `${profileData.nickName}`.trim() :
+                      `${profileData.firstName} ${profileData.lastName}`.trim() :
                       'Student'
                     }
                   </h2>
@@ -233,6 +352,11 @@ function Profile({ darkMode, setDarkMode }) {
                   </div>
                 </div>
               </div>
+
+              {/* Edit Profile Action */}
+              <button className="edit-profile-btn" onClick={openEditModal}>
+                ✏️ Edit Profile
+              </button>
             </div>
 
             {/* Enhanced Statistics Grid */}
@@ -282,104 +406,102 @@ function Profile({ darkMode, setDarkMode }) {
               </div>
             </div>
 
-            {/* Profile Form */}
-            <form className="enhanced-profile-form" onSubmit={handleSave}>
-              <h3 className="form-title">⚙️ Profile Settings</h3>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="firstName">First Name</label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={profileData.firstName}
-                    disabled
-                    className="disabled-input"
-                    title="Name is set during registration and cannot be changed"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="lastName">Last Name</label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={profileData.lastName}
-                    disabled
-                    className="disabled-input"
-                    title="Name is set during registration and cannot be changed"
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="nickName">Nickname</label>
-                  <input
-                    type="text"
-                    id="nickName"
-                    name="nickName"
-                    value={profileData.nickName}
-                    onChange={handleChange}
-                    placeholder="Your Nickname"
-                    maxLength={30}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="studyGoal">Daily Study Goal</label>
-                <select
-                  id="studyGoal"
-                  name="studyGoal"
-                  value={profileData.studyGoal}
-                  onChange={handleChange}
-                >
-                  <option value="30 minutes daily">30 minutes daily</option>
-                  <option value="1 hour daily">1 hour daily</option>
-                  <option value="2 hours daily">2 hours daily</option>
-                  <option value="3 hours daily">3 hours daily</option>
-                  <option value="4+ hours daily">4+ hours daily</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email">Email Address</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={profileData.email}
-                  disabled
-                  className="disabled-input"
-                  title="Email is set during registration and cannot be changed"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="enhanced-save-btn"
-                disabled={saving}
-              >
-                {saving ? '💾 Saving...' : '💾 Save Profile Changes'}
-              </button>
-            </form>
           </div>
         </div>
       </main>
 
       {/* Success Popup */}
-      {showSuccessPopup && (
-        <div className="success-popup-overlay">
-          <div className="success-popup">
-            <div className="success-icon">✅</div>
-            <h3 className="success-title">Success!</h3>
-            <p className="success-message">Profile updated successfully</p>
+      {
+        showSuccessPopup && (
+          <div className="success-popup-overlay">
+            <div className="success-popup">
+              <div className="success-icon">✅</div>
+              <h3 className="success-title">Success!</h3>
+              <p className="success-message">Profile updated successfully</p>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+
+      {/* Edit Profile Modal */}
+      {
+        showEditModal && createPortal(
+          <div className="profile-edit-modal-overlay" onClick={closeEditModal}>
+            <div className="profile-edit-modal" onClick={e => e.stopPropagation()}>
+              <div className="profile-edit-modal-header">
+                <h3>Edit Profile Settings</h3>
+                <button className="plan-modal-close" onClick={closeEditModal}>×</button>
+              </div>
+
+              <form onSubmit={handleSave} className="profile-edit-modal-body">
+                <div className="plan-form-group">
+                  <label htmlFor="editFirstName">First Name</label>
+                  <input
+                    type="text"
+                    id="editFirstName"
+                    name="firstName"
+                    value={editFormData.firstName}
+                    onChange={handleEditChange}
+                    placeholder="First Name"
+                    required
+                  />
+                </div>
+
+                <div className="plan-form-group">
+                  <label htmlFor="editLastName">Last Name</label>
+                  <input
+                    type="text"
+                    id="editLastName"
+                    name="lastName"
+                    value={editFormData.lastName}
+                    onChange={handleEditChange}
+                    placeholder="Last Name"
+                  />
+                </div>
+
+                <div className="plan-form-group">
+                  <label htmlFor="editStudyGoal">Daily Study Goal</label>
+                  <select
+                    id="editStudyGoal"
+                    name="studyGoal"
+                    value={editFormData.studyGoal}
+                    onChange={handleEditChange}
+                  >
+                    <option value="30 minutes daily">30 minutes daily</option>
+                    <option value="1 hour daily">1 hour daily</option>
+                    <option value="2 hours daily">2 hours daily</option>
+                    <option value="3 hours daily">3 hours daily</option>
+                    <option value="4+ hours daily">4+ hours daily</option>
+                  </select>
+                </div>
+
+                <div className="plan-form-group">
+                  <label>Email Address</label>
+                  <input
+                    type="email"
+                    value={profileData.email}
+                    disabled
+                    className="disabled-input"
+                    title="Email cannot be changed"
+                    style={{ backgroundColor: '#f3f4f6', color: '#9ca3af', cursor: 'not-allowed' }}
+                  />
+                </div>
+
+                <div className="profile-edit-modal-footer">
+                  <button type="button" className="plan-btn plan-btn-cancel" onClick={closeEditModal}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="plan-btn plan-btn-add" disabled={saving}>
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>,
+          document.body
+        )
+      }
+    </div >
   );
 }
 

@@ -2,11 +2,45 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const { 
-  register, 
-  login, 
-  getMe, 
-  updateProfile, 
+const multer = require('multer');
+const path = require('path');
+
+// Configure multer for profile image uploads
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    const uploadPath = path.resolve(__dirname, '..', 'uploads');
+    console.log('Multer destination:', uploadPath);
+    cb(null, uploadPath);
+  },
+  filename(req, file, cb) {
+    const userId = req.user._id.toString();
+    const fileName = `${userId}-${Date.now()}${path.extname(file.originalname)}`;
+    console.log('Multer filename:', fileName);
+    cb(null, fileName);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpg|jpeg|png/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (extname && mimetype) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Images only!'));
+    }
+  },
+});
+
+const {
+  register,
+  login,
+  getMe,
+  updateProfile,
+  uploadProfileImage,
   logout,
   forgotPassword,
   resetPassword
@@ -20,6 +54,7 @@ router.post('/register', registerValidation, validate, register);
 router.post('/login', loginValidation, validate, login);
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
+router.post('/profile/upload-image', protect, upload.single('image'), uploadProfileImage);
 router.post('/logout', protect, logout);
 
 // Password reset
@@ -31,7 +66,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 router.get(
   '/google/callback',
-  passport.authenticate('google', { 
+  passport.authenticate('google', {
     session: false,
     failureRedirect: 'http://localhost:3000/login?error=google_auth_failed'
   }),

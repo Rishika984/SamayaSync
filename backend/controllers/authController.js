@@ -111,13 +111,13 @@ exports.getMe = async (req, res) => {
 // ------------------ UPDATE PROFILE ------------------
 exports.updateProfile = async (req, res) => {
   try {
-    const { nickName, studyGoal } = req.body;
+    const { fullName, studyGoal } = req.body;
 
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    if (nickName !== undefined) user.nickName = nickName.trim();
     if (studyGoal !== undefined) user.studyGoal = studyGoal;
+    if (fullName !== undefined) user.fullName = fullName.trim();
 
     await user.save();
 
@@ -126,6 +126,7 @@ exports.updateProfile = async (req, res) => {
       fullName: user.fullName,
       email: user.email,
       nickName: user.nickName,
+      profileImage: user.profileImage,
       studyGoal: user.studyGoal,
       role: user.role,
       createdAt: user.createdAt,
@@ -133,6 +134,30 @@ exports.updateProfile = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+// ------------------ UPLOAD PROFILE IMAGE ------------------
+exports.uploadProfileImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image uploaded' });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Store the relative path to the image
+    user.profileImage = `/uploads/${req.file.filename}`;
+    await user.save();
+
+    res.json({
+      message: 'Profile image uploaded successfully',
+      profileImage: user.profileImage,
+    });
+  } catch (error) {
+    console.error('Upload Error:', error);
+    res.status(500).json({ message: 'Server error during upload' });
   }
 };
 
